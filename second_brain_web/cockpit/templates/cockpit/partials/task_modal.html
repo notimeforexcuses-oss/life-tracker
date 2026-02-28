@@ -1,0 +1,103 @@
+<div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center p-4" id="task-modal"
+    role="dialog" aria-modal="true">
+    <div class="bg-white w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+
+        <div class="p-6 border-b border-gray-200 flex justify-between items-start bg-gray-50">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800" id="task-modal-header" tabindex="-1">{{ task.title }}</h2>
+                <div class="text-sm text-gray-500 mt-1 flex space-x-2">
+                    <span>📂 {{ task.linked_project.title|default:"No Project" }}</span>
+                </div>
+            </div>
+            <button onclick="handleModalClose('task-modal', '{{ return_focus|default:'main-heading' }}')"
+                class="text-gray-400 hover:text-gray-800 text-2xl" aria-label="Close Modal">
+                &times;
+            </button>
+        </div>
+
+        <div class="p-6 overflow-y-auto flex-1 space-y-6">
+
+            <div class="grid grid-cols-2 gap-6">
+                <div class="col-span-2">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Assigned
+                        Project</label>
+                    <select name="linked_project_id" class="w-full p-2 border border-gray-300 rounded bg-white"
+                        hx-post="/api/tasks/{{ task.id }}/update/" hx-trigger="change" hx-swap="none">
+                        <option value="">-- No Project --</option>
+                        {% for p in projects %}
+                        <option value="{{ p.id }}" {% if task.linked_project_id == p.id %}selected{% endif %}>{{ p.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Due Date</label>
+                    <input type="date" name="due_date" value="{{ task.parsed_due_date|date:'Y-m-d'|default:'' }}"
+                        class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                        hx-post="/api/tasks/{{ task.id }}/update/" hx-trigger="change" hx-swap="none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Priority</label>
+                    <select name="priority" class="w-full p-2 border border-gray-300 rounded bg-white"
+                        hx-post="/api/tasks/{{ task.id }}/update/" hx-trigger="change" hx-swap="none">
+                        <option value="Low" {% if task.priority == 'Low' %}selected{% endif %}>Low</option>
+                        <option value="Medium" {% if task.priority == 'Medium' %}selected{% endif %}>Medium</option>
+                        <option value="High" {% if task.priority == 'High' %}selected{% endif %}>High</option>
+                    </select>
+                </div>
+
+                <div class="col-span-2 border-t border-gray-100 pt-4">
+                    {% include 'cockpit/partials/assignee_list.html' with entity_type='task' entity_id=task.id %}
+                </div>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Progress Log</h3>
+                <div class="space-y-3 max-h-40 overflow-y-auto">
+                    {% for update in updates %}
+                    <div class="text-sm pl-3 border-l-2 border-gray-200">
+                        <span class="text-gray-400 text-xs block">{{ update.created_at }}</span>
+                        <p class="text-gray-700 mt-0.5">{{ update.content }}</p>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-400 italic text-sm">No updates recorded yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="p-4 border-t border-gray-200 bg-gray-50">
+            <form hx-post="/api/tasks/{{ task.id }}/update/" hx-swap="none"
+                hx-on::after-request="handleModalClose('task-modal', '{{ return_focus|default:'main-heading' }}')">
+
+                <div class="flex flex-col space-y-4">
+                    <div class="flex items-center">
+                        <input type="checkbox" name="is_complete" id="chk_complete"
+                            class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500" {% if task.status == 'COMPLETED' %}checked{% endif %}>
+                        <label for="chk_complete" class="ml-2 block text-sm font-bold text-gray-700 cursor-pointer">Mark
+                            as Complete</label>
+                    </div>
+
+                    <div class="flex space-x-2">
+                        <input type="text" name="notes" placeholder="Add a progress note..."
+                            class="flex-1 border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            autocomplete="off">
+                        <button type="submit" onclick="playSystemSound('save')"
+                            class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700">
+                            Log & Close
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    setTimeout(() => {
+        document.getElementById('task-modal-header').focus();
+    }, 150);
+</script>

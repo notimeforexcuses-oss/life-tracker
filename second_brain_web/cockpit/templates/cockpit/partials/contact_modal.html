@@ -1,0 +1,739 @@
+<div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-[9999] flex items-center justify-center p-4 animate-fade-in"
+    id="contact-modal" role="dialog" aria-modal="true" style="display: flex !important;">
+    <div class="bg-white w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        x-data="{ 
+            editMode: {% if contact and contact.id %}false{% else %}true{% endif %},
+            currentView: 'main',
+            linkedProjects: [],
+            linkedTasks: [],
+            pickerType: 'project',
+            searchQuery: '',
+            lastTriggerId: null,
+            toggleItem(id) {
+                if (this.pickerType === 'project') {
+                    if (this.linkedProjects.includes(id)) {
+                        this.linkedProjects = this.linkedProjects.filter(i => i !== id);
+                    } else {
+                        this.linkedProjects.push(id);
+                    }
+                } else {
+                    if (this.linkedTasks.includes(id)) {
+                        this.linkedTasks = this.linkedTasks.filter(i => i !== id);
+                    } else {
+                        this.linkedTasks.push(id);
+                    }
+                }
+            },
+            handleHeaderClose() {
+                if (this.currentView === 'picker') {
+                    this.closePicker();
+                } else {
+                    handleModalClose('contact-modal', 'crm-heading');
+                }
+            },
+            openPicker(type, triggerId) {
+                this.pickerType = type;
+                this.lastTriggerId = triggerId;
+                this.currentView = 'picker';
+            },
+            closePicker() {
+                this.currentView = 'main';
+                if (this.lastTriggerId) {
+                    setTimeout(() => {
+                        const el = document.getElementById(this.lastTriggerId);
+                        if (el) el.focus();
+                    }, 50);
+                }
+            }
+        }">
+
+        <!-- Header -->
+        <div class="p-6 border-b border-gray-200 flex justify-between items-start bg-gray-50">
+            <div class="flex items-center gap-4">
+                <!-- Avatar Placeholder -->
+                <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xl border-2 border-blue-200"
+                     x-show="currentView === 'main'">
+                    {{ contact.name|slice:":1"|default:"?" }}
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800" id="contact-modal-header" tabindex="-1">
+                        <span x-show="currentView === 'main'">
+                            {% if contact %}{{ contact.name }}{% else %}New Contact{% endif %}
+                        </span>
+                        <span x-show="currentView === 'picker'">
+                            Select <span x-text="pickerType === 'project' ? 'Projects' : 'Tasks'"></span>
+                        </span>
+                    </h2>
+                    <template x-if="!editMode && currentView === 'main'">
+                        <div class="flex gap-2 mt-1">
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
+                                {{ contact.relationship|default:"Uncategorized" }}
+                            </span>
+                            {% if contact.tier %}
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                                {{ contact.tier }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <template x-if="!editMode && currentView === 'main'">
+                    <button
+                        @click="editMode = true; setTimeout(() => document.getElementById('name-input').focus(), 100)"
+                        class="text-gray-500 hover:text-blue-600 p-2 rounded hover:bg-blue-50 transition-colors"
+                        title="Edit Contact">
+                        ✎ Edit
+                    </button>
+                </template>
+                <button @click="handleHeaderClose()"
+                    class="text-gray-400 hover:text-gray-800 text-2xl p-2 focus:outline-none focus:ring-2 focus:ring-gray-500 rounded"
+                    aria-label="Close Modal">&times;</button>
+            </div>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="p-6 overflow-y-auto flex-1 space-y-6">
+
+            <!-- READ ONLY VIEW -->
+            <div x-show="!editMode && currentView === 'main'" class="space-y-6 animate-fade-in">
+                <!-- Contact Methods -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 transition-colors group"
+                         :class="{% if contact.email %}'hover:border-blue-300 hover:bg-blue-50 cursor-pointer'{% else %}'bg-gray-50 opacity-70'{% endif %}">
+                        <span class="text-xl">✉️</span>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase">Email</p>
+                            {% if contact.email %}
+                            <a href="mailto:{{ contact.email }}" class="text-gray-800 font-medium group-hover:text-blue-700 block">{{ contact.email }}</a>
+                            {% else %}
+                            <p class="text-gray-400 text-sm italic">--</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 transition-colors group"
+                         :class="{% if contact.phone %}'hover:border-green-300 hover:bg-green-50 cursor-pointer'{% else %}'bg-gray-50 opacity-70'{% endif %}">
+                        <span class="text-xl">📞</span>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase">Phone</p>
+                            {% if contact.phone %}
+                            <a href="tel:{{ contact.phone }}" class="text-gray-800 font-medium group-hover:text-green-700 block">{{ contact.phone }}</a>
+                            {% else %}
+                            <p class="text-gray-400 text-sm italic">--</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Block -->
+                <div class="p-4 rounded-lg border border-gray-200" :class="{% if contact.address_street %}'bg-gray-50'{% else %}'bg-gray-50 opacity-70'{% endif %}">
+                    <p class="text-xs font-bold text-gray-400 uppercase mb-2">Address</p>
+                    {% if contact.address_street or contact.address_city %}
+                    <p class="text-gray-800">
+                        {{ contact.address_street }}<br>
+                        {% if contact.address_city %}{{ contact.address_city }}, {% endif %}{{ contact.address_state }}
+                        {{ contact.address_zip }}
+                    </p>
+                    {% else %}
+                    <p class="text-gray-400 text-sm italic">No address provided</p>
+                    {% endif %}
+                </div>
+
+                <!-- Organization & Notes -->
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase mb-1">Organization & Role</p>
+                        <p class="text-gray-800">
+                            {% if contact.organization or contact.job_title %}
+                                <span class="font-bold">{{ contact.organization|default:"Independent" }}</span>
+                                {% if contact.job_title %}
+                                <span class="text-gray-500 text-sm block">{{ contact.job_title }}</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-gray-400 italic text-sm">--</span>
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase mb-1">Next Follow-up</p>
+                        <p class="text-gray-800 flex items-center gap-2">
+                            {% if contact.next_contact_date %}
+                                <span class="text-blue-600 font-bold">📅 {{ contact.next_contact_date }}</span>
+                            {% else %}
+                                <span class="text-gray-400 italic text-sm">No follow-up set</span>
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <div class="col-span-2">
+                        <p class="text-xs font-bold text-gray-400 uppercase mb-1">Social</p>
+                        {% if contact.linkedin_url %}
+                        <a href="{{ contact.linkedin_url }}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-2 text-sm font-medium">
+                            <span>🔗 LinkedIn Profile</span>
+                        </a>
+                        {% else %}
+                        <p class="text-gray-400 italic text-sm">No social profiles linked.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-span-2">
+                        <p class="text-xs font-bold text-gray-400 uppercase mb-1">Notes</p>
+                        {% if contact.notes %}
+                        <p class="text-gray-600 italic">{{ contact.notes|linebreaksbr }}</p>
+                        {% else %}
+                        <p class="text-gray-400 italic text-sm">No notes available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Interaction Log (Read Only Mode) -->
+                {% if contact %}
+                <div class="border-t border-gray-200 pt-6" x-data="{ showLogForm: false }">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-sm font-bold text-gray-800 flex items-center">
+                            <span class="mr-2">📅</span> Interaction History
+                        </h3>
+                        <button @click="showLogForm = !showLogForm" 
+                            class="text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded transition-colors">
+                            <span x-text="showLogForm ? 'Cancel' : '+ Log Interaction'"></span>
+                        </button>
+                    </div>
+
+                    <!-- Enhanced Log Form -->
+                    <form hx-post="{% url 'log_interaction' contact.id %}" hx-target="#contact-modal"
+                        hx-swap="outerHTML" class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-100 space-y-3" x-show="showLogForm" x-transition>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Date</label>
+                                <input type="date" name="date" required value="{% now 'Y-m-d' %}"
+                                    class="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Type</label>
+                                <select name="type" class="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white">
+                                    <option value="Call">📞 Call</option>
+                                    <option value="Meeting">👥 Meeting</option>
+                                    <option value="Email">✉️ Email</option>
+                                    <option value="Meal">🍽️ Meal</option>
+                                    <option value="Text">💬 Text</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Link Project (Optional)</label>
+                                <select name="linked_project_id" class="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white">
+                                    <option value="">-- None --</option>
+                                    {% for p in projects %}
+                                    <option value="{{ p.id }}">{{ p.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Link Goal (Optional)</label>
+                                <select name="linked_goal_id" class="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white">
+                                    <option value="">-- None --</option>
+                                    {% for g in goals %}
+                                    <option value="{{ g.id }}">{{ g.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Participants Multi-Select -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">With Others (Hold Ctrl/Cmd to select multiple)</label>
+                            <select name="participants" multiple class="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white h-24">
+                                {% for c in all_contacts %}
+                                    {% if c.id != contact.id %}
+                                    <option value="{{ c.id }}">{{ c.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Notes</label>
+                            <textarea name="notes" placeholder="What did you discuss?" required rows="2"
+                                class="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm"></textarea>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button type="submit" onclick="playSystemSound('save')"
+                                class="bg-blue-600 text-white px-4 py-2 rounded font-bold text-sm hover:bg-blue-700 shadow-sm">
+                                Save Log
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="space-y-3 max-h-40 overflow-y-auto bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        {% for interaction in interactions %}
+                        <div class="text-sm border-l-2 border-blue-300 pl-3">
+                            <div class="flex justify-between">
+                                <span class="font-bold text-gray-700">{{ interaction.type }}</span>
+                                <span class="text-xs text-gray-400">{{ interaction.date }}</span>
+                            </div>
+                            <p class="text-gray-600 mt-1">{{ interaction.notes }}</p>
+                            
+                            <!-- Metadata Tags -->
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                {% if interaction.linked_project %}
+                                <span class="text-xs bg-purple-100 text-purple-800 px-1 rounded border border-purple-200">🏗️ {{ interaction.linked_project.title }}</span>
+                                {% endif %}
+                                {% if interaction.linked_goal %}
+                                <span class="text-xs bg-blue-100 text-blue-800 px-1 rounded border border-blue-200">🎯 {{ interaction.linked_goal.title }}</span>
+                                {% endif %}
+                                
+                                <!-- Participants -->
+                                {% for p in interaction.participants.all %}
+                                    {% if p.id != contact.id %}
+                                    <span class="text-xs bg-green-100 text-green-800 px-1 rounded border border-green-200">👤 {{ p.name }}</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-gray-400 italic text-sm text-center">No interactions recorded yet.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Shared Work Section -->
+                <div class="border-t border-gray-200 pt-6" x-data="{ showWorkForm: false, workType: 'project' }">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-sm font-bold text-gray-800 flex items-center">
+                            <span class="mr-2">🏗️</span> Shared Work
+                        </h3>
+                        <button @click="showWorkForm = !showWorkForm" 
+                            class="text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded transition-colors">
+                            <span x-text="showWorkForm ? 'Cancel' : '+ Assign to Work'"></span>
+                        </button>
+                    </div>
+
+                    <!-- Assign to Work Form -->
+                    <form hx-post="{% url 'assign_to_work' contact.id %}" hx-target="#contact-modal"
+                        hx-swap="outerHTML" class="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-3" x-show="showWorkForm" x-transition>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Type</label>
+                                <select name="entity_type" x-model="workType" class="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white" required>
+                                    <option value="project">Project</option>
+                                    <option value="task">Task</option>
+                                    <option value="goal">Goal</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Select Item</label>
+                                <select name="entity_id" class="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white" required>
+                                    <option value="">-- Select --</option>
+                                    <template x-if="workType === 'project'">
+                                        {% for p in all_active_projects %}
+                                        <option value="{{ p.id }}">{{ p.title }}</option>
+                                        {% endfor %}
+                                    </template>
+                                    <template x-if="workType === 'task'">
+                                        {% for t in all_pending_tasks %}
+                                        <option value="{{ t.id }}">{{ t.title }}</option>
+                                        {% endfor %}
+                                    </template>
+                                    <template x-if="workType === 'goal'">
+                                        {% for g in all_active_goals %}
+                                        <option value="{{ g.id }}">{{ g.title }}</option>
+                                        {% endfor %}
+                                    </template>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Role (Optional)</label>
+                            <input type="text" name="role" placeholder="e.g. Stakeholder, Reviewer"
+                                class="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button type="submit" onclick="playSystemSound('save')"
+                                class="bg-blue-600 text-white px-4 py-2 rounded font-bold text-sm hover:bg-blue-700 shadow-sm">
+                                Assign
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- List of Shared Items -->
+                    <div class="space-y-4">
+                        {% if shared_projects %}
+                        <div class="space-y-2">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Projects</p>
+                            {% for p in shared_projects %}
+                            <div class="flex items-center justify-between text-sm bg-white p-2 rounded border border-gray-100 group">
+                                <span class="font-medium text-gray-700 truncate">📂 {{ p.title }}</span>
+                                <button hx-post="{% url 'unassign_from_work' contact.id %}" 
+                                        hx-vals='{"entity_type": "project", "entity_id": "{{ p.id }}"}'
+                                        hx-target="#contact-modal"
+                                        hx-confirm="Remove this contact from the project?"
+                                        class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-1">
+                                    &times;
+                                </button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        {% if shared_tasks %}
+                        <div class="space-y-2">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Tasks</p>
+                            {% for t in shared_tasks %}
+                            <div class="flex items-center justify-between text-sm bg-white p-2 rounded border border-gray-100 group">
+                                <span class="font-medium text-gray-700 truncate">✅ {{ t.title }}</span>
+                                <button hx-post="{% url 'unassign_from_work' contact.id %}" 
+                                        hx-vals='{"entity_type": "task", "entity_id": "{{ t.id }}"}'
+                                        hx-target="#contact-modal"
+                                        hx-confirm="Remove this contact from the task?"
+                                        class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-1">
+                                    &times;
+                                </button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        {% if shared_goals %}
+                        <div class="space-y-2">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Goals</p>
+                            {% for g in shared_goals %}
+                            <div class="flex items-center justify-between text-sm bg-white p-2 rounded border border-gray-100 group">
+                                <span class="font-medium text-gray-700 truncate">🎯 {{ g.title }}</span>
+                                <button hx-post="{% url 'unassign_from_work' contact.id %}" 
+                                        hx-vals='{"entity_type": "goal", "entity_id": "{{ g.id }}"}'
+                                        hx-target="#contact-modal"
+                                        hx-confirm="Remove this contact from the goal?"
+                                        class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-1">
+                                    &times;
+                                </button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        {% if not shared_projects and not shared_tasks and not shared_goals %}
+                        <p class="text-gray-400 italic text-xs text-center">No shared work linked.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+
+            <!-- EDIT FORM -->
+            <form id="contact-form" hx-post="{% url 'add_contact' %}" hx-swap="none" 
+                  x-show="editMode && currentView === 'main'" class="animate-fade-in">
+                <input type="hidden" name="contact_id" value="{{ contact.id|default:'' }}">
+                
+                <!-- Hidden inputs for linked work -->
+                <template x-for="id in linkedProjects">
+                    <input type="hidden" name="linked_project_ids" :value="id">
+                </template>
+                <template x-for="id in linkedTasks">
+                    <input type="hidden" name="linked_task_ids" :value="id">
+                </template>
+
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <div class="col-span-2">
+                        <label for="name-input" class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Full
+                            Name</label>
+                        <input type="text" id="name-input" name="name" value="{{ contact.name|default:'' }}" required
+                            class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none font-bold text-lg"
+                            placeholder="e.g. John Doe">
+                    </div>
+
+                    <!-- Flexible Relationship Input -->
+                    <div>
+                        <label for="input-relationship"
+                            class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Relationship</label>
+                        <input type="text" id="input-relationship" list="relationships-list" name="relationship"
+                            value="{{ contact.relationship|default:'' }}"
+                            class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                            placeholder="Select or Type...">
+                        <datalist id="relationships-list">
+                            <option value="Network">
+                            <option value="Family">
+                            <option value="Friend">
+                            <option value="Work">
+                            <option value="Other">
+                        </datalist>
+                    </div>
+
+                    <!-- Tier Input -->
+                    <div>
+                        <label for="input-tier" class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Tier</label>
+                        <input type="text" id="input-tier" list="tiers-list" name="tier" value="{{ contact.tier|default:'' }}"
+                            class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                            placeholder="e.g. VIP, Tier 1...">
+                        <datalist id="tiers-list">
+                            <option value="VIP">
+                            <option value="Tier 1">
+                            <option value="Tier 2">
+                            <option value="Tier 3">
+                        </datalist>
+                    </div>
+
+                    <div>
+                        <label for="input-org"
+                            class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Organization</label>
+                        <input type="text" id="input-org" name="organization" value="{{ contact.organization|default:'' }}"
+                            class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+
+                    <div>
+                        <label for="input-job-title"
+                            class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Job Title</label>
+                        <input type="text" id="input-job-title" name="job_title" value="{{ contact.job_title|default:'' }}"
+                            class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                            placeholder="e.g. Director of Ops">
+                    </div>
+
+                    <!-- Shared Work Section (New) -->
+                    <div class="col-span-2 border-t border-gray-100 pt-4 mt-2 mb-4">
+                        <label class="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-3">Linked Work</label>
+                        
+                        <div class="flex gap-3 mb-3">
+                            <button type="button" id="btn-link-project" @click="openPicker('project', 'btn-link-project')"
+                                class="text-xs bg-white border border-gray-300 hover:bg-gray-50 px-3 py-1.5 rounded font-bold text-gray-700 shadow-sm">
+                                + Link Project
+                            </button>
+                            <button type="button" id="btn-link-task" @click="openPicker('task', 'btn-link-task')"
+                                class="text-xs bg-white border border-gray-300 hover:bg-gray-50 px-3 py-1.5 rounded font-bold text-gray-700 shadow-sm">
+                                + Link Task
+                            </button>
+                        </div>
+
+                        <!-- Chips -->
+                        <ul class="flex flex-wrap gap-2 list-none p-0 m-0" x-show="linkedProjects.length > 0 || linkedTasks.length > 0">
+                            <template x-for="id in linkedProjects">
+                                <li class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full font-bold border border-purple-200 flex items-center gap-1">
+                                    <span x-text="'📂 ' + document.getElementById('proj-name-' + id).innerText"></span>
+                                    <button type="button" 
+                                            @click="toggleItem(id); $nextTick(() => document.getElementById('btn-link-project').focus())" 
+                                            title="Clear Selection"
+                                            aria-label="Clear Selection"
+                                            class="text-purple-600 hover:text-purple-900 font-bold ml-1">&times;</button>
+                                </li>
+                            </template>
+                            <template x-for="id in linkedTasks">
+                                <li class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-bold border border-green-200 flex items-center gap-1">
+                                    <span x-text="'✅ ' + document.getElementById('task-name-' + id).innerText"></span>
+                                    <button type="button" 
+                                            @click="toggleItem(id); $nextTick(() => document.getElementById('btn-link-task').focus())" 
+                                            title="Clear Selection"
+                                            aria-label="Clear Selection"
+                                            class="text-green-600 hover:text-green-900 font-bold ml-1">&times;</button>
+                                </li>
+                            </template>
+                        </ul>
+                        <p x-show="linkedProjects.length === 0 && linkedTasks.length === 0" class="text-xs text-gray-400 italic py-1">No work linked yet.</p>
+                    </div>
+
+                    <div>
+                        <label for="input-email"
+                            class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Email</label>
+                        <input type="email" id="input-email" name="email" value="{{ contact.email|default:'' }}"
+                            class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+
+                    <div>
+                        <label for="input-linkedin"
+                            class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">LinkedIn URL</label>
+                        <input type="url" id="input-linkedin" name="linkedin_url" value="{{ contact.linkedin_url|default:'' }}"
+                            class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                            placeholder="https://linkedin.com/in/...">
+                    </div>
+
+                    <div>
+                        <label for="input-phone"
+                            class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Phone</label>
+                        <input type="tel" id="input-phone" name="phone" value="{{ contact.phone|default:'' }}"
+                            class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+
+                    <div>
+                        <label for="input-next-contact"
+                            class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 text-blue-600">Next Follow-up</label>
+                        <input type="date" id="input-next-contact" name="next_contact_date" value="{{ contact.next_contact_date|default:'' }}"
+                            class="w-full p-2 border border-blue-200 rounded focus:ring-2 focus:ring-blue-500 outline-none bg-blue-50">
+                    </div>
+
+                    <!-- Structured Address Fields -->
+                    <div class="col-span-2 border-t border-gray-100 pt-4 mt-2">
+                        <label class="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-3">Address
+                            Details</label>
+                        <div class="grid grid-cols-6 gap-3">
+                            <div class="col-span-6">
+                                <input type="text" name="address_street" value="{{ contact.address_street|default:'' }}"
+                                    placeholder="Street Address" aria-label="Street Address"
+                                    class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                            </div>
+                            <div class="col-span-3">
+                                <input type="text" name="address_city" value="{{ contact.address_city|default:'' }}"
+                                    placeholder="City" aria-label="City"
+                                    class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                            </div>
+                            <div class="col-span-2">
+                                <input type="text" name="address_state" value="{{ contact.address_state|default:'' }}"
+                                    placeholder="State" aria-label="State"
+                                    class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                            </div>
+                            <div class="col-span-1">
+                                <input type="text" name="address_zip" value="{{ contact.address_zip|default:'' }}"
+                                    placeholder="Zip" aria-label="Zip Code"
+                                    class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-span-2 mt-4">
+                        <label for="input-notes"
+                            class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Notes</label>
+                        <textarea id="input-notes" name="notes" rows="3"
+                            class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">{{ contact.notes|default:'' }}</textarea>
+                    </div>
+                </div>
+            </form>
+
+            <!-- WORK PICKER VIEW -->
+            <div x-show="currentView === 'picker'" class="flex-1 flex flex-col min-h-0 bg-gray-50" style="display: none;"
+                 @keydown.tab="handlePickerTab($event)">
+                <div class="p-4 border-b border-gray-200 bg-white sticky top-0 z-10">
+                    <input type="text" x-model="searchQuery" placeholder="Search..." 
+                           class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                
+                <div class="flex-1 overflow-y-auto p-2 space-y-1">
+                    <!-- Projects List -->
+                    <template x-if="pickerType === 'project'">
+                        <div class="space-y-1">
+                            {% for p in all_active_projects %}
+                            <label class="flex items-center p-3 bg-white border border-gray-200 rounded hover:bg-blue-50 cursor-pointer transition-colors"
+                                   x-show="'{{ p.title|lower }}'.includes(searchQuery.toLowerCase())">
+                                <input type="checkbox" :checked="linkedProjects.includes({{ p.id }})" @change="toggleItem({{ p.id }})"
+                                       class="h-5 w-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300">
+                                <span class="ml-3 font-medium text-gray-700" id="proj-name-{{ p.id }}">📂 {{ p.title }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </template>
+
+                    <!-- Tasks List -->
+                    <template x-if="pickerType === 'task'">
+                        <div class="space-y-1">
+                            {% for t in all_pending_tasks %}
+                            <label class="flex items-center p-3 bg-white border border-gray-200 rounded hover:bg-blue-50 cursor-pointer transition-colors"
+                                   x-show="'{{ t.title|lower }}'.includes(searchQuery.toLowerCase())">
+                                <input type="checkbox" :checked="linkedTasks.includes({{ t.id }})" @change="toggleItem({{ t.id }})"
+                                       class="h-5 w-5 text-green-600 rounded focus:ring-green-500 border-gray-300">
+                                <span class="ml-3 font-medium text-gray-700" id="task-name-{{ t.id }}">✅ {{ t.title }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </template>
+                </div>
+                
+                <div class="p-4 border-t border-gray-200 bg-white flex justify-end">
+                    <button type="button" @click="closePicker()" 
+                            class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 shadow-sm">
+                        Done
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="p-4 border-t border-gray-200 bg-gray-50 flex justify-between items-center" x-show="currentView === 'main'">
+
+            <!-- Left Side: Delete (Only in Edit Mode & Existing Contact) -->
+            <div>
+                {% if contact.id %}
+                <template x-if="editMode">
+                    <button hx-post="{% url 'delete_contact' contact.id %}"
+                        hx-confirm="Are you sure you want to delete this contact?"
+                        class="text-red-500 hover:text-red-700 text-sm font-bold focus:outline-none flex items-center gap-1">
+                        🗑 Delete
+                    </button>
+                </template>
+                {% endif %}
+            </div>
+
+            <!-- Right Side: Cancel/Save -->
+            <div class="flex space-x-3">
+                <template x-if="editMode">
+                    <button
+                        @click="{% if contact.id %}editMode = false; setTimeout(() => document.getElementById('contact-modal-header').focus(), 100){% else %}handleModalClose('contact-modal', 'crm-heading'){% endif %}"
+                        class="px-4 py-2 text-gray-600 hover:text-gray-800 font-bold focus:outline-none focus:underline">
+                        Cancel
+                    </button>
+                </template>
+                <template x-if="!editMode">
+                    <button onclick="handleModalClose('contact-modal', 'crm-heading')"
+                        class="px-4 py-2 text-gray-600 hover:text-gray-800 font-bold focus:outline-none focus:underline">
+                        Close
+                    </button>
+                </template>
+
+                <template x-if="editMode">
+                    <button onclick="playSystemSound('save'); document.getElementById('contact-form').requestSubmit()"
+                        class="px-6 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md">
+                        Save Contact
+                    </button>
+                </template>
+                <template x-if="!editMode">
+                    <button @click="editMode = true; setTimeout(() => document.getElementById('name-input').focus(), 100)"
+                        class="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg font-bold hover:bg-gray-50 focus:outline-none shadow-sm">
+                        Edit Details
+                    </button>
+                </template>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    window.handlePickerTab = function(e) {
+        const picker = document.querySelector('[x-show="currentView === \'picker\'"]');
+        if (!picker || picker.style.display === 'none') return;
+
+        const focusableElements = picker.querySelectorAll(
+            'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select'
+        );
+        const focusable = Array.from(focusableElements).filter(el => el.offsetParent !== null);
+        if (focusable.length === 0) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey) {
+            if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+            if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+    };
+
+    setTimeout(() => {
+        // If in edit mode (new contact), focus name
+        if (document.getElementById('name-input') && {% if not contact.id %}true{% else %}false{% endif %}) {
+        document.getElementById('name-input').focus();
+    } else {
+        document.getElementById('contact-modal-header').focus();
+    }
+    }, 150);
+</script>

@@ -1,0 +1,30 @@
+# Ignore environment files
+.env
+.env.local
+.DS_Store
+
+# Google Secrets
+credentials.json
+token.json
+
+# Ignore Python specific
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+
+# Ignore database
+*.sqlite3
+brain_backup_*.zip
+
+# Ignore IDE specific
+.vscode/
+.idea/
+
+# Ignore logs
+*.log
+
+# Ignore Aider chat logs
+.aider*

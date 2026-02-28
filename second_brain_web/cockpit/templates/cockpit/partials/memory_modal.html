@@ -1,0 +1,401 @@
+<div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-[9999] flex items-center justify-center p-4"
+    id="memory-modal" role="dialog" aria-modal="true" style="display: flex !important;">
+    
+    <div class="bg-white w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+         x-data="{
+            currentView: 'main',
+            itemType: '{{ item_type|default:"note" }}',
+            pickerType: 'project',
+            searchQuery: '',
+            linkedProjects: [{% if item.linked_project %}{{ item.linked_project.id }}{% endif %}],
+            linkedGoals: [{% if item.linked_goal %}{{ item.linked_goal.id }}{% endif %}],
+            linkedContacts: [{% if item.linked_contact %}{{ item.linked_contact.id }}{% endif %}],
+            linkedNotes: {{ linked_note_ids|default:"[]" }},
+            linkedEntries: {{ linked_entry_ids|default:"[]" }},
+            lastTriggerId: null,
+            
+            init() {
+                this.$nextTick(() => {
+                    if (window.toggleFocusTrap) window.toggleFocusTrap(true);
+                    const header = document.getElementById('memory-modal-header');
+                    if (header) header.focus();
+                });
+            },
+            
+            toggleItem(id) {
+                let targetArray;
+                let isMulti = false;
+                
+                if (this.pickerType === 'project') targetArray = this.linkedProjects;
+                if (this.pickerType === 'goal') targetArray = this.linkedGoals;
+                if (this.pickerType === 'contact') targetArray = this.linkedContacts;
+                if (this.pickerType === 'note') { targetArray = this.linkedNotes; isMulti = true; }
+                if (this.pickerType === 'journal') { targetArray = this.linkedEntries; isMulti = true; }
+                
+                if (targetArray.includes(id)) {
+                    // Deselect
+                    if (isMulti) {
+                        const index = targetArray.indexOf(id);
+                        if (index > -1) targetArray.splice(index, 1);
+                    } else {
+                        if (this.pickerType === 'project') this.linkedProjects = [];
+                        if (this.pickerType === 'goal') this.linkedGoals = [];
+                        if (this.pickerType === 'contact') this.linkedContacts = [];
+                    }
+                } else {
+                    // Select
+                    if (isMulti) {
+                        targetArray.push(id);
+                    } else {
+                        // Replace (Single Select)
+                        if (this.pickerType === 'project') this.linkedProjects = [id];
+                        if (this.pickerType === 'goal') this.linkedGoals = [id];
+                        if (this.pickerType === 'contact') this.linkedContacts = [id];
+                    }
+                }
+            },
+            
+            handleHeaderClose() {
+                if (this.currentView === 'picker') {
+                    this.closePicker();
+                } else {
+                    if (window.handleModalClose) {
+                        window.handleModalClose('memory-modal', 'btn-new-memory');
+                    } else {
+                        document.getElementById('memory-modal').remove();
+                    }
+                }
+            },
+            openPicker(type, triggerId) {
+                this.pickerType = type;
+                this.lastTriggerId = triggerId;
+                this.currentView = 'picker';
+                this.searchQuery = '';
+            },
+            closePicker() {
+                this.currentView = 'main';
+                if (this.lastTriggerId) {
+                    setTimeout(() => {
+                        const el = document.getElementById(this.lastTriggerId);
+                        if (el) el.focus();
+                    }, 50);
+                }
+            }
+         }">
+
+        <!-- Header -->
+        <div class="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+            <h2 class="text-2xl font-bold text-gray-800" id="memory-modal-header" tabindex="-1">
+                <span x-show="currentView === 'main'">
+                    {% if item %}
+                        {% if item.title %}Editing: {{ item.title|truncatechars:20 }}{% else %}Edit {{ item_type|title }}{% endif %}
+                    {% else %}
+                        New Memory
+                    {% endif %}
+                </span>
+                <span x-show="currentView === 'picker'">
+                    Select <span x-text="pickerType"></span>
+                </span>
+            </h2>
+            <button @click="handleHeaderClose()" class="text-gray-400 hover:text-gray-800 text-2xl p-2 focus:outline-none focus:ring-2 focus:ring-gray-500 rounded" aria-label="Close">&times;</button>
+        </div>
+
+        <form hx-post="{% url 'save_memory_item' %}" 
+              hx-target="#memories-content" 
+              hx-swap="innerHTML"
+              hx-on::after-request="window.handleModalClose('memory-modal', 'btn-new-memory')"
+              enctype="multipart/form-data"
+              hx-encoding="multipart/form-data"
+              class="flex-1 overflow-y-auto flex flex-col">
+            
+            <input type="hidden" name="item_id" value="{{ item.id|default:'' }}">
+            <input type="hidden" name="item_type" :value="itemType">
+            
+            <!-- Hidden inputs for links -->
+            <template x-for="id in linkedProjects"><input type="hidden" name="linked_project_id" :value="id"></template>
+            <template x-for="id in linkedGoals"><input type="hidden" name="linked_goal_id" :value="id"></template>
+            <template x-for="id in linkedContacts"><input type="hidden" name="linked_contact_id" :value="id"></template>
+            <template x-for="id in linkedNotes"><input type="hidden" name="linked_note_id" :value="id"></template>
+            <template x-for="id in linkedEntries"><input type="hidden" name="linked_entry_id" :value="id"></template>
+
+            <!-- MAIN FORM -->
+            <div x-show="currentView === 'main'" class="p-6 space-y-6 flex-1">
+                
+                <!-- Type Toggle (Only for New Items) -->
+                {% if not item %}
+                <div class="flex bg-gray-100 p-1 rounded-lg">
+                    <button type="button" @click="itemType = 'note'"
+                            :class="itemType === 'note' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+                            class="flex-1 py-2 rounded-md text-sm font-bold transition-all focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <span aria-hidden="true">📝</span> Note
+                    </button>
+                    <button type="button" @click="itemType = 'journal'"
+                            :class="itemType === 'journal' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+                            class="flex-1 py-2 rounded-md text-sm font-bold transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <span aria-hidden="true">📅</span> Journal Entry
+                    </button>
+                </div>
+                
+                <!-- Dynamic Description -->
+                <div class="text-center text-sm text-gray-500 italic">
+                    <span x-show="itemType === 'note'" class="animate-fade-in">Capture atomic ideas, meeting notes, and resources for your knowledge base.</span>
+                    <span x-show="itemType === 'journal'" class="animate-fade-in">Log thoughts, daily reflections, and chronological events.</span>
+                </div>
+                {% endif %}
+
+                <!-- Note Fields -->
+                <div x-show="itemType === 'note'" class="space-y-4 animate-fade-in">
+                    <div>
+                        <label for="note-title-input" class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Title</label>
+                        <input type="text" name="title" value="{{ item.title|default:'' }}" 
+                               id="note-title-input"
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-bold text-lg outline-none"
+                               placeholder="Untitled Note">
+                    </div>
+
+                    <!-- Attachments Input -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Attachments</label>
+                        <input type="file" name="attachments" multiple 
+                               class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                        <p class="text-xs text-gray-400 mt-1">Supported: Images, PDF, Word, Text</p>
+                        {% if item.attachments.all %}
+                        <p class="text-xs text-blue-600 font-bold mt-1">📎 {{ item.attachments.count }} file(s) already attached.</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Existing Attachments (Clustered here) -->
+                    {% if item.attachments.all %}
+                    <div class="grid grid-cols-2 gap-2 mt-2">
+                        {% for att in item.attachments.all %}
+                        <a href="{{ att.file_path }}" target="_blank" class="flex items-center p-2 bg-gray-50 rounded border border-gray-200 hover:bg-blue-50 transition-colors group">
+                            <span class="text-xl mr-2">📎</span>
+                            <div class="overflow-hidden">
+                                <p class="text-sm font-medium text-gray-700 truncate group-hover:text-blue-700">{{ att.file_name }}</p>
+                                <p class="text-xs text-gray-400">{{ att.uploaded_at }}</p>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Journal Fields -->
+                <div x-show="itemType === 'journal'" class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="journal-date" class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Date</label>
+                        <input type="date" id="journal-date" name="date" value="{{ item.date|default:today_str }}" 
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    <div>
+                        <label for="journal-time" class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Time</label>
+                        <input type="time" id="journal-time" name="time" value="{{ item.time|default:now_time_str }}" 
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                </div>
+
+                <!-- Content (Common) -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Content (Markdown Supported)</label>
+                    <textarea name="content" rows="8" required
+                              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-gray-700 leading-relaxed resize-none font-mono text-sm"
+                              placeholder="Write here... Use **bold**, - lists, or [[links]]">{{ item.content|default:'' }}</textarea>
+                </div>
+
+                <!-- Tags (Common) -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Tags (Comma separated)</label>
+                    <input type="text" name="tags" value="{{ item.tags|default:'' }}" 
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                           placeholder="#ideas, #work, #personal">
+                </div>
+
+                <!-- Linked Context (Wizard Buttons) -->
+                <div class="border-t border-gray-100 pt-4 mt-2">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Context & Links</label>
+                    
+                    <div class="flex gap-2 mb-4 overflow-x-auto">
+                        <button type="button" id="btn-link-proj" @click="openPicker('project', 'btn-link-proj')" 
+                                class="px-3 py-1.5 border border-gray-300 rounded-full text-xs font-bold hover:bg-gray-50 flex items-center gap-1 whitespace-nowrap">
+                            <span aria-hidden="true">🏗️</span> Project
+                        </button>
+                        <button type="button" id="btn-link-goal" @click="openPicker('goal', 'btn-link-goal')"
+                                class="px-3 py-1.5 border border-gray-300 rounded-full text-xs font-bold hover:bg-gray-50 flex items-center gap-1 whitespace-nowrap">
+                            <span aria-hidden="true">🎯</span> Goal
+                        </button>
+                        <button type="button" id="btn-link-contact" @click="openPicker('contact', 'btn-link-contact')"
+                                class="px-3 py-1.5 border border-gray-300 rounded-full text-xs font-bold hover:bg-gray-50 flex items-center gap-1 whitespace-nowrap">
+                            <span aria-hidden="true">👤</span> Contact
+                        </button>
+                        <div class="w-px bg-gray-300 mx-1"></div>
+                        <button type="button" id="btn-link-note" @click="openPicker('note', 'btn-link-note')" 
+                                class="px-3 py-1.5 border border-gray-300 rounded-full text-xs font-bold hover:bg-gray-50 flex items-center gap-1 whitespace-nowrap">
+                            <span aria-hidden="true">📝</span> Link Note
+                        </button>
+                        <button type="button" id="btn-link-journal" @click="openPicker('journal', 'btn-link-journal')" 
+                                class="px-3 py-1.5 border border-gray-300 rounded-full text-xs font-bold hover:bg-gray-50 flex items-center gap-1 whitespace-nowrap">
+                            <span aria-hidden="true">📅</span> Link Entry
+                        </button>
+                    </div>
+
+                    <!-- Chips Display (Semantic List) -->
+                    <ul class="flex flex-wrap gap-2 list-none p-0 m-0 min-h-[24px]">
+                        <!-- Projects -->
+                        <template x-for="id in linkedProjects">
+                            <li class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full font-bold border border-purple-200 flex items-center gap-1">
+                                <span aria-hidden="true">🏗️</span>
+                                <span x-text="(document.getElementById('picker-proj-' + id)?.innerText || 'Loading...')"></span>
+                                <button type="button" @click="toggleItem(id); $nextTick(() => document.getElementById('btn-link-proj').focus())" class="ml-1 text-purple-600 hover:text-purple-900" aria-label="Remove">&times;</button>
+                            </li>
+                        </template>
+                        <!-- Goals -->
+                        <template x-for="id in linkedGoals">
+                            <li class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-bold border border-blue-200 flex items-center gap-1">
+                                <span aria-hidden="true">🎯</span>
+                                <span x-text="(document.getElementById('picker-goal-' + id)?.innerText || 'Loading...')"></span>
+                                <button type="button" @click="toggleItem(id); $nextTick(() => document.getElementById('btn-link-goal').focus())" class="ml-1 text-blue-600 hover:text-blue-900" aria-label="Remove">&times;</button>
+                            </li>
+                        </template>
+                        <!-- Contacts -->
+                        <template x-for="id in linkedContacts">
+                            <li class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-bold border border-green-200 flex items-center gap-1">
+                                <span aria-hidden="true">👤</span>
+                                <span x-text="(document.getElementById('picker-contact-' + id)?.innerText || 'Loading...')"></span>
+                                <button type="button" @click="toggleItem(id); $nextTick(() => document.getElementById('btn-link-contact').focus())" class="ml-1 text-green-600 hover:text-green-900" aria-label="Remove">&times;</button>
+                            </li>
+                        </template>
+                        <!-- Notes -->
+                        <template x-for="id in linkedNotes">
+                            <li class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-bold border border-yellow-200 flex items-center gap-1">
+                                <span aria-hidden="true">📝</span>
+                                <span x-text="(document.getElementById('picker-note-' + id)?.innerText || 'Loading...')"></span>
+                                <button type="button" @click="toggleItem(id); $nextTick(() => document.getElementById('btn-link-note').focus())" class="ml-1 text-yellow-600 hover:text-yellow-900" aria-label="Remove">&times;</button>
+                            </li>
+                        </template>
+                        <!-- Journal Entries -->
+                        <template x-for="id in linkedEntries">
+                            <li class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full font-bold border border-indigo-200 flex items-center gap-1">
+                                <span aria-hidden="true">📅</span>
+                                <span x-text="(document.getElementById('picker-entry-' + id)?.innerText || 'Loading...')"></span>
+                                <button type="button" @click="toggleItem(id); $nextTick(() => document.getElementById('btn-link-journal').focus())" class="ml-1 text-indigo-600 hover:text-indigo-900" aria-label="Remove">&times;</button>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- PICKER VIEW -->
+            <div x-show="currentView === 'picker'" class="flex-1 flex flex-col min-h-0 bg-gray-50" style="display: none;"
+                 @keydown.tab="handlePickerTab($event)">
+                
+                <div class="p-4 border-b border-gray-200 bg-white sticky top-0 z-10">
+                    <input type="text" x-model="searchQuery" placeholder="Search..." 
+                           class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+
+                <div class="flex-1 overflow-y-auto p-2 space-y-1">
+                    
+                    <!-- Projects -->
+                    <template x-if="pickerType === 'project'">
+                        <div>
+                            {% for p in projects %}
+                            <label class="flex items-center p-3 bg-white border border-gray-200 rounded hover:bg-blue-50 cursor-pointer mb-1"
+                                   x-show="'{{ p.title|lower }}'.includes(searchQuery.toLowerCase())">
+                                <input type="checkbox" :checked="linkedProjects.includes({{ p.id }})" @change="toggleItem({{ p.id }})"
+                                       class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-3 font-medium text-gray-700" id="picker-proj-{{ p.id }}">{{ p.title }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </template>
+
+                    <!-- Goals -->
+                    <template x-if="pickerType === 'goal'">
+                        <div>
+                            {% for g in goals %}
+                            <label class="flex items-center p-3 bg-white border border-gray-200 rounded hover:bg-blue-50 cursor-pointer mb-1"
+                                   x-show="'{{ g.title|lower }}'.includes(searchQuery.toLowerCase())">
+                                <input type="checkbox" :checked="linkedGoals.includes({{ g.id }})" @change="toggleItem({{ g.id }})"
+                                       class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-3 font-medium text-gray-700" id="picker-goal-{{ g.id }}">{{ g.title }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </template>
+
+                    <!-- Contacts -->
+                    <template x-if="pickerType === 'contact'">
+                        <div>
+                            {% for c in contacts %}
+                            <label class="flex items-center p-3 bg-white border border-gray-200 rounded hover:bg-blue-50 cursor-pointer mb-1"
+                                   x-show="'{{ c.name|lower }}'.includes(searchQuery.toLowerCase())">
+                                <input type="checkbox" :checked="linkedContacts.includes({{ c.id }})" @change="toggleItem({{ c.id }})"
+                                       class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-3 font-medium text-gray-700" id="picker-contact-{{ c.id }}">{{ c.name }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </template>
+                    
+                    <!-- Notes -->
+                    <template x-if="pickerType === 'note'">
+                        <div>
+                            {% for n in all_notes %}
+                            <label class="flex items-center p-3 bg-white border border-gray-200 rounded hover:bg-blue-50 cursor-pointer mb-1"
+                                   x-show="'{{ n.title|default:'Untitled'|lower }}'.includes(searchQuery.toLowerCase())">
+                                <input type="checkbox" :checked="linkedNotes.includes({{ n.id }})" @change="toggleItem({{ n.id }})"
+                                       class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-3 font-medium text-gray-700" id="picker-note-{{ n.id }}">{{ n.title|default:"Untitled" }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </template>
+                    
+                    <!-- Journal Entries -->
+                    <template x-if="pickerType === 'journal'">
+                        <div>
+                            {% for e in all_entries %}
+                            <label class="flex items-center p-3 bg-white border border-gray-200 rounded hover:bg-blue-50 cursor-pointer mb-1"
+                                   x-show="'{{ e.content|truncatechars:30|lower }}'.includes(searchQuery.toLowerCase())">
+                                <input type="checkbox" :checked="linkedEntries.includes({{ e.id }})" @change="toggleItem({{ e.id }})"
+                                       class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-3 font-medium text-gray-700" id="picker-entry-{{ e.id }}">{{ e.date }} - {{ e.content|truncatechars:30 }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </template>
+
+                </div>
+
+                <div class="p-4 border-t border-gray-200 bg-white flex justify-end">
+                    <button type="button" @click="closePicker()" 
+                            class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 shadow-sm">
+                        Done
+                    </button>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="p-4 border-t border-gray-200 bg-gray-50 flex justify-between items-center" x-show="currentView === 'main'">
+                <div>
+                    {% if item %}
+                    <button hx-post="{% url 'delete_memory_item' %}?type={{ item_type }}&id={{ item.id }}"
+                            hx-confirm="Are you sure you want to delete this?"
+                            hx-target="#memories-content"
+                            hx-swap="innerHTML"
+                            onclick="window.handleModalClose('memory-modal', 'btn-new-memory')"
+                            class="text-red-500 hover:text-red-700 text-sm font-bold flex items-center gap-1">
+                        🗑 Delete
+                    </button>
+                    {% endif %}
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" @click="handleHeaderClose()" class="px-4 py-2 text-gray-600 font-medium hover:bg-gray-200 rounded-lg">Cancel</button>
+                    <button type="submit" onclick="playSystemSound('save')" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 shadow-sm">Save</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>

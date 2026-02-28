@@ -1,0 +1,22 @@
+<div id="memories-sidebar-tags" class="flex flex-wrap gap-2" hx-swap-oob="true">
+    {% for tag in all_tags %}
+    <button hx-get="{% url 'render_memories_content' %}"
+            hx-vals='{"tag": "{{ tag }}"}'
+            hx-target="#memories-content"
+            hx-include="[name='view']"
+            class="px-2 py-1 bg-white border border-gray-200 rounded text-xs font-medium text-gray-600 hover:text-blue-600 hover:border-blue-300 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 {{ tag == current_tag|yesno:'bg-blue-50 border-blue-300 text-blue-700,' }}">
+        #{{ tag }}
+    </button>
+    {% empty %}
+    <p class="text-gray-400 text-xs italic">No tags yet.</p>
+    {% endfor %}
+    
+    {% if current_tag %}
+    <button hx-get="{% url 'render_memories_content' %}"
+            hx-target="#memories-content"
+            hx-include="[name='view']"
+            class="px-2 py-1 bg-red-50 border border-red-200 rounded text-xs font-bold text-red-600 hover:bg-red-100 w-full mt-2">
+        &times; Clear Filter
+    </button>
+    {% endif %}
+</div>

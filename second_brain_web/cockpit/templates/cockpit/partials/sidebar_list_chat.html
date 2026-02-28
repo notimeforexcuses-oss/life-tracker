@@ -1,0 +1,14 @@
+<div id="chat-history-list" class="space-y-2">
+    {% for session in sessions %}
+    <li class="list-none">
+        <a href="/chat?session={{ session.0 }}" 
+           class="block p-2 rounded text-sm {% if session.0|stringformat:'s' == active_session_id|stringformat:'s' %}bg-blue-100 text-blue-800 font-bold{% else %}text-gray-600 hover:bg-gray-200{% endif %}"
+           aria-label="Conversation: {{ session.1 }}">
+            <span class="block truncate font-medium">{{ session.1 }}</span>
+            <span class="block text-xs text-gray-400">{{ session.2|slice:":16" }}</span>
+        </a>
+    </li>
+    {% empty %}
+    <li class="text-center text-gray-400 text-xs italic py-4">No matching chats found.</li>
+    {% endfor %}
+</div>

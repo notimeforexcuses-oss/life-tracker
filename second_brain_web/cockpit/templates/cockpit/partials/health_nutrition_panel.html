@@ -1,0 +1,176 @@
+{% load custom_filters %}
+<div class="space-y-10" x-data="{ showDetails: false }">
+    
+    <!-- Controls Bar -->
+    <div class="flex justify-end px-2">
+        <button @click="showDetails = !showDetails" 
+                type="button"
+                class="text-xs font-bold text-gray-400 hover:text-orange-500 flex items-center gap-1 transition-colors focus:outline-none focus:text-orange-600"
+                :aria-pressed="showDetails.toString()">
+            <span x-text="showDetails ? 'Hide Details' : 'Show Details'"></span>
+            <svg class="w-4 h-4 transition-transform duration-200" :class="showDetails ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </button>
+    </div>
+
+    {% include 'cockpit/partials/health_hydration.html' %}
+
+    {% for date, day_data in grouped_logs.items %}
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+        
+        <!-- Daily Header with Summary -->
+        <div class="mb-6 pb-4 border-b-2 border-orange-100">
+            <h3 class="text-xl font-black text-gray-800 flex items-center gap-2 mb-4">
+                <span aria-hidden="true">📅</span> {{ date|format_health_date }}
+            </h3>
+            
+            <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                <!-- Calorie Main Bar -->
+                <div class="mb-4">
+                    <div class="flex justify-between items-end mb-1">
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Daily Calories</span>
+                        <div class="text-right">
+                            <span class="text-2xl font-black {% if day_data.progress.cal_left < 0 %}text-red-600{% else %}text-gray-800{% endif %}">
+                                {{ day_data.progress.cal_left }}
+                            </span>
+                            <span class="text-[10px] text-gray-400 font-bold uppercase">Left</span>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                        <div class="h-full transition-all duration-500 rounded-full
+                                    {% if day_data.progress.cal >= 100 %}bg-red-500
+                                    {% elif day_data.progress.cal >= 85 %}bg-orange-500
+                                    {% else %}bg-green-500{% endif %}" 
+                             style="width: {{ day_data.progress.cal }}%"></div>
+                    </div>
+                    <div class="flex justify-between mt-1 text-[10px] text-gray-400 font-bold">
+                        <span>{{ day_data.totals.cal }} eaten</span>
+                        <span>2000 goal</span>
+                    </div>
+                </div>
+
+                <!-- Macros Grid -->
+                <div class="grid grid-cols-3 gap-4 border-t border-gray-100 pt-4">
+                    <!-- Protein -->
+                    <div>
+                        <div class="flex justify-between text-[10px] font-bold text-gray-500 uppercase mb-1">
+                            <span>Protein</span>
+                            <span>{{ day_data.totals.prot }}/150g</span>
+                        </div>
+                        <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-blue-500 h-full rounded-full" style="width: {{ day_data.progress.prot }}%"></div>
+                        </div>
+                    </div>
+                    <!-- Carbs -->
+                    <div>
+                        <div class="flex justify-between text-[10px] font-bold text-gray-500 uppercase mb-1">
+                            <span>Carbs</span>
+                            <span>{{ day_data.totals.carb }}/200g</span>
+                        </div>
+                        <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-orange-400 h-full rounded-full" style="width: {{ day_data.progress.carb }}%"></div>
+                        </div>
+                    </div>
+                    <!-- Fat -->
+                    <div>
+                        <div class="flex justify-between text-[10px] font-bold text-gray-500 uppercase mb-1">
+                            <span>Fat</span>
+                            <span>{{ day_data.totals.fat }}/65g</span>
+                        </div>
+                        <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-yellow-400 h-full rounded-full" style="width: {{ day_data.progress.fat }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="space-y-6">
+            {% for meal in day_data.entries %}
+            <div class="group relative">
+                <h4 class="text-xs font-bold text-orange-600 uppercase tracking-widest mb-2 px-1">{{ meal.meal_type }}</h4>
+                
+                <div class="w-full bg-gray-50 border border-gray-200 rounded-xl hover:bg-orange-50 hover:border-orange-200 transition-all relative">
+                    
+                    <!-- Edit Link (Block Anchor) -->
+                    <a href="#" 
+                       class="block p-4 focus:ring-2 focus:ring-orange-500 focus:outline-none rounded-xl"
+                       hx-get="{% url 'render_health_modal' %}?type=meal&id={{ meal.id }}"
+                       hx-target="#modal-container"
+                       aria-label="Edit {{ meal.food_item }}">
+                        
+                        <div class="flex justify-between items-start gap-4">
+                            <div class="flex-1">
+                                <div class="font-bold text-gray-800 text-lg mb-2">{{ meal.food_item|default:'Untitled' }}</div>
+                                <div class="flex flex-wrap gap-4">
+                                    <div class="flex flex-col">
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase">Calories</span>
+                                        <span class="font-black text-gray-700">{{ meal.calories|default:0 }}</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase">Protein</span>
+                                        <span class="font-black text-gray-700">{{ meal.protein_g|default:0 }}g</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase">Carbs</span>
+                                        <span class="font-black text-gray-700">{{ meal.carbs_g|default:0 }}g</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase">Fat</span>
+                                        <span class="font-black text-gray-700">{{ meal.fat_g|default:0 }}g</span>
+                                    </div>
+                                </div>
+
+                                <!-- Micro-nutrients (Hidden by default) -->
+                                <div x-show="showDetails" x-collapse class="mt-4 pt-4 border-t border-gray-200/50 grid grid-cols-2 gap-2">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-gray-400">Fiber</span>
+                                        <span class="font-bold text-gray-600">{{ meal.fiber_g|default:0 }}g</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-gray-400">Sugar</span>
+                                        <span class="font-bold text-gray-600">{{ meal.sugar_g|default:0 }}g</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-gray-400">Sodium</span>
+                                        <span class="font-bold text-gray-600">{{ meal.sodium_mg|default:0 }}mg</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-gray-400">Cholesterol</span>
+                                        <span class="font-bold text-gray-600">{{ meal.cholesterol_mg|default:0 }}mg</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Macro Donut Chart (Decorative) -->
+                            <div class="relative w-16 h-16 flex-shrink-0 mr-8" role="presentation">
+                                {% with segs=meal|calculate_segments %}
+                                <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 32 32">
+                                    <circle cx="16" cy="16" r="14" fill="transparent" stroke="#f3f4f6" stroke-width="4"></circle>
+                                    <circle cx="16" cy="16" r="14" fill="transparent" stroke="#10b981" stroke-width="4" stroke-dasharray="{{ segs.p }} 100" stroke-dashoffset="0"></circle>
+                                    <circle cx="16" cy="16" r="14" fill="transparent" stroke="#3b82f6" stroke-width="4" stroke-dasharray="{{ segs.c }} 100" stroke-dashoffset="-{{ segs.c_off }}"></circle>
+                                    <circle cx="16" cy="16" r="14" fill="transparent" stroke="#f59e0b" stroke-width="4" stroke-dasharray="{{ segs.f }} 100" stroke-dashoffset="-{{ segs.f_off }}"></circle>
+                                </svg>
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Duplicate Button -->
+                    <button hx-post="{% url 'duplicate_meal' meal.id %}"
+                            hx-swap="none"
+                            class="absolute top-4 right-4 p-1.5 text-gray-300 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 z-10 bg-white shadow-sm border border-gray-100"
+                            title="Duplicate to Today">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="text-center py-20 bg-white border border-dashed border-gray-300 rounded-xl">
+        <div class="text-4xl mb-4">🥗</div>
+        <div class="text-gray-500 font-medium">No nutrition logs found. Time to eat healthy!</div>
+    </div>
+    {% endfor %}
+</div>

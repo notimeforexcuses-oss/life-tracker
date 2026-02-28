@@ -1,0 +1,25 @@
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in">
+    {% for project in projects %}
+        <button hx-get="/api/render_project_stage/{{ project.id }}"
+                hx-target="#active-project-stage"
+                hx-swap="innerHTML"
+                onclick="playSystemSound('success')"
+                class="block text-left w-full p-5 border border-gray-200 rounded-xl hover:border-blue-400 hover:shadow-lg hover:-translate-y-0.5 transition-all bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 group {{ project.priority_border }}">
+            
+            <div class="flex justify-between items-center mb-3">
+                <h4 class="font-bold text-gray-800 text-lg group-hover:text-blue-700 transition-colors">{{ project.title }}</h4>
+                <span class="text-xs font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-md group-hover:bg-blue-50 group-hover:text-blue-600">
+                    {{ project.percent_complete }}%
+                </span>
+            </div>
+            
+            <div class="w-full bg-gray-100 rounded-full h-2" role="progressbar" aria-valuenow="{{ project.percent_complete }}" aria-valuemin="0" aria-valuemax="100" aria-label="Progress: {{ project.percent_complete }}%">
+                <div class="{{ project.progress_color }} h-2 rounded-full transition-all duration-500" style="width: {{ project.percent_complete }}%"></div>
+            </div>
+        </button>
+    {% empty %}
+        <div class="col-span-2 text-center py-10 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50">
+            <p class="text-gray-400 font-medium">There are no {{ current_status|default:"active"|lower }} projects assigned to this goal.</p>
+        </div>
+    {% endfor %}
+</div>

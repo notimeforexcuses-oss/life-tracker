@@ -1,0 +1,158 @@
+{% extends 'cockpit/base.html' %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-8 p-6">
+
+    <header class="flex justify-between items-end border-b pb-4 border-gray-200">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800 tracking-tight">{{ today }}</h1>
+            <p class="text-gray-500 mt-1">📍 Arizona, USA | System Status: Nominal</p>
+        </div>
+        <div>
+            {% if focus %}
+                <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200 shadow-sm">
+                    🧠 Focus Level: {{ focus.focus_level }}/10
+                </span>
+            {% else %}
+                <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-500 border border-gray-200">
+                    💤 No Focus Data
+                </span>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div class="md:col-span-2 space-y-6">
+            <!-- Critical Path -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Critical Path</h2>
+                    {% if tasks %}
+                    <span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-0.5 rounded-full">{{ tasks|length }} Tasks</span>
+                    {% endif %}
+                </div>
+                
+                <div class="space-y-3">
+                    {% for task in tasks %}
+                    <div class="group flex items-center justify-between p-2 -mx-2 rounded hover:bg-gray-50 transition-colors" id="dash-task-{{ task.id }}">
+                        
+                        <div class="flex items-center space-x-3 overflow-hidden">
+                            <input type="checkbox" 
+                                   hx-post="/api/tasks/{{ task.id }}/complete" 
+                                   hx-target="#dash-task-{{ task.id }}" 
+                                   hx-swap="outerHTML"
+                                   aria-label="Mark {{ task.title }} as complete"
+                                   class="h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer">
+                            
+                            <div class="truncate">
+                                <a href="#" 
+                                   class="block text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+                                    {{ task.title }}
+                                    </a>
+                                    <p class="text-xs text-gray-400">Due: {{ task.due_date|default:"Today" }}</p>
+                                </div>
+                            </div>
+                            
+                            <span class="flex-shrink-0 px-2 py-0.5 bg-red-50 text-red-700 text-[10px] font-bold uppercase tracking-wider rounded border border-red-100">
+                                High
+                            </span>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-6">
+                            <p class="text-gray-400 text-sm italic">All critical systems clear.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Proactive Insights -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest">The Pulse (Proactive Insights)</h2>
+                        <div hx-get="/api/notifications/" hx-trigger="every 30s" hx-swap="none"></div>
+                    </div>
+                    <div id="notification-container" hx-get="/api/notifications/" hx-trigger="load, every 60s">
+                        <!-- Content loaded via HTMX -->
+                        <div class="animate-pulse space-y-3">
+                            <div class="h-12 bg-gray-100 rounded"></div>
+                            <div class="h-12 bg-gray-100 rounded"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Legislative Proposals -->
+                <div class="bg-blue-50/30 p-6 rounded-xl shadow-sm border border-blue-100 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xs font-bold text-blue-400 uppercase tracking-widest">Legislation (Pending Approval)</h2>
+                    </div>
+                    <div id="proposal-container" hx-get="/api/proposals/" hx-trigger="load, every 60s">
+                        <div class="animate-pulse space-y-3">
+                            <div class="h-20 bg-white rounded"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Financial Pulse -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                    <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Financial Pulse</h2>
+                    <div class="flex items-baseline space-x-1">
+                        <span class="text-4xl font-bold text-gray-900">${{ spend }}</span>
+                        <span class="text-sm text-gray-500">burned this month</span>
+                    </div>
+                    <div class="mt-6">
+                        <div class="flex justify-between text-xs text-gray-500 mb-1">
+                            <span>Budget Usage</span>
+                            <span class="font-bold {% if budget_health > 90 %}text-red-600{% endif %}">{{ budget_health }}%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                            <div class="bg-gray-800 h-2 rounded-full transition-all duration-1000" style="width: {{ budget_health }}%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Relationship Pulse -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                    <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Relationship Pulse</h2>
+                    
+                    {% if pulse_contacts %}
+                    <div class="space-y-4">
+                        {% for contact in pulse_contacts %}
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="text-sm font-bold text-gray-900">{{ contact.name }}</h3>
+                                    <span class="text-[10px] px-1.5 py-0.5 rounded font-bold
+                                        {% if contact.health_score <= 25 %}bg-red-100 text-red-800
+                                        {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                        {{ contact.health_score }}%
+                                    </span>
+                                </div>
+                                <p class="text-xs text-gray-500">Last: {{ contact.parsed_last_contact_date|timesince|default:"Never" }} ago</p>
+                            </div>
+                            
+                            <button onclick="playSystemSound('success')"
+                                hx-get="{% url 'get_contact_details' contact.id %}"
+                                hx-target="#modal-container"
+                                class="text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded transition-colors"
+                                aria-label="Log interaction with {{ contact.name }}">
+                                Connect
+                            </button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="h-full flex flex-col items-center justify-center text-center pb-4">
+                        <span class="text-3xl mb-2">💚</span>
+                        <p class="text-sm font-medium text-gray-600">All relationships healthy.</p>
+                        <p class="text-xs text-gray-400">Great job maintaining your network!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+    </div>
+</div>
+{% endblock %}

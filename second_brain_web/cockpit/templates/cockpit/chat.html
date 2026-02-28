@@ -1,0 +1,114 @@
+{% extends 'cockpit/base.html' %}
+
+{% block title %}Chat | Second Brain{% endblock %}
+
+{% block content %}
+<div class="flex h-full" id="main-app-wrapper" 
+     x-data="{ showHistory: false, showSearch: false }"
+     x-init="setTimeout(() => { document.getElementById('chat-panel-heading').focus(); }, 200)"
+     @keydown.window.alt.s.prevent="showSearch = !showSearch; if(showSearch) { $nextTick(() => $refs.searchInput.focus()); } else { $nextTick(() => $refs.searchToggleBtn.focus()); }"
+     @keydown.window.alt.h.prevent="showHistory = !showHistory; $nextTick(() => $refs.historyToggleBtn.focus())"
+     @keydown.window.alt.n.prevent="$refs.newChatBtn.click()"
+     @keydown.window.alt.x.prevent="$refs.deleteChatBtn ? $refs.deleteChatBtn.click() : null">
+
+    <!-- SIDEBAR: MANAGEMENT TOOLBAR -->
+    <nav class="w-80 bg-gray-100 border-r border-gray-200 flex-shrink-0 flex flex-col h-full" aria-label="Chat Management">
+        
+        <div class="p-4 space-y-4 overflow-y-auto flex-1">
+            
+            <!-- 1. NEW CHAT -->
+            <button hx-post="{% url 'new_chat' %}" 
+                    x-ref="newChatBtn"
+                    class="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 font-bold transition-all active:scale-95 mb-6 focus:ring-2 focus:ring-blue-500 outline-none"
+                    aria-label="Start a New Conversation (Alt+N)">
+                <span aria-hidden="true">+</span> New Chat
+            </button>
+
+            <!-- 2. HISTORY SECTION -->
+            <div class="space-y-2">
+                <button @click="showHistory = !showHistory; $nextTick(() => $refs.historyToggleBtn.focus())" 
+                        x-ref="historyToggleBtn"
+                        :class="showHistory ? 'bg-blue-100 text-blue-800 border-blue-200' : 'bg-white text-gray-700 border-gray-300'"
+                        class="w-full flex items-center justify-between px-4 py-2.5 border rounded-lg text-sm font-bold shadow-sm hover:bg-gray-50 transition-colors focus:ring-2 focus:ring-blue-500 outline-none"
+                        aria-label="Toggle Chat History (Alt+H)"
+                        :aria-expanded="showHistory">
+                    <span class="flex items-center gap-2">📜 History</span>
+                    <span :class="showHistory ? 'rotate-180' : ''" class="transition-transform duration-200" aria-hidden="true">▼</span>
+                </button>
+
+                <!-- HISTORY LIST (COLLAPSIBLE) -->
+                <div x-show="showHistory" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 -translate-y-2"
+                     class="bg-white border border-gray-200 rounded-lg p-2 shadow-inner max-h-64 overflow-y-auto">
+                    <ul id="chat-history-list" class="space-y-1">
+                        {% include 'cockpit/partials/sidebar_list_chat.html' %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 3. SEARCH SECTION -->
+            <div class="space-y-2">
+                <button @click="showSearch = !showSearch; if(showSearch) { $nextTick(() => $refs.searchInput.focus()); } else { $nextTick(() => $refs.searchToggleBtn.focus()); }" 
+                        x-ref="searchToggleBtn"
+                        :class="showSearch ? 'bg-blue-100 text-blue-800 border-blue-200' : 'bg-white text-gray-700 border-gray-300'"
+                        class="w-full flex items-center justify-between px-4 py-2.5 border rounded-lg text-sm font-bold shadow-sm hover:bg-gray-50 transition-colors focus:ring-2 focus:ring-blue-500 outline-none"
+                        aria-label="Toggle Search (Alt+S)"
+                        :aria-expanded="showSearch">
+                    <span class="flex items-center gap-2">🔍 Search</span>
+                    <span :class="showSearch ? 'rotate-180' : ''" class="transition-transform duration-200" aria-hidden="true">▼</span>
+                </button>
+
+                <!-- SEARCH REGION (COLLAPSIBLE & DISTINCT) -->
+                <div x-show="showSearch" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 -translate-y-2"
+                     class="p-4 bg-blue-50 border border-blue-200 rounded-lg shadow-inner">
+                    <form hx-get="{% url 'search_chat_history' %}"
+                          hx-target="#chat-history-list"
+                          hx-trigger="submit"
+                          @submit="showHistory = true"
+                          class="space-y-3">
+                        <div class="relative">
+                            <label for="chat-search-input" class="sr-only">Search text</label>
+                            <input type="text" 
+                                   id="chat-search-input"
+                                   name="q"
+                                   x-ref="searchInput"
+                                   value="{{ search_query|default:'' }}"
+                                   placeholder="Keywords..."
+                                   class="w-full pl-3 pr-3 py-2 border border-blue-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none shadow-sm"
+                                   hx-get="{% url 'search_chat_history' %}"
+                                   hx-trigger="keyup changed delay:500ms"
+                                   hx-target="#chat-history-list">
+                        </div>
+                        <button type="submit" 
+                                class="w-full py-1.5 bg-blue-500 text-white rounded text-xs font-bold hover:bg-blue-600 transition-colors shadow-sm focus:ring-2 focus:ring-blue-300 outline-none">
+                            Run Search
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+        
+        <!-- DESTRUCTIVE ACTION (BOTTOM) -->
+        {% if active_session_id %}
+        <div class="p-4 border-t border-gray-200 bg-gray-50">
+            <button hx-post="{% url 'delete_chat' active_session_id %}"
+                    hx-confirm="Delete this conversation forever?"
+                    x-ref="deleteChatBtn"
+                    class="w-full flex items-center justify-center gap-2 py-3 text-red-700 hover:bg-red-100 rounded-lg text-sm font-bold transition-colors border border-red-200 shadow-sm focus:ring-2 focus:ring-red-500 outline-none"
+                    aria-label="Delete Active Chat (Alt+X)">
+                <span aria-hidden="true">🗑️</span> Delete Active Chat
+            </button>
+        </div>
+        {% endif %}
+    </nav>
+
+    <!-- MAIN CHAT AREA -->
+    <div class="flex-1 flex flex-col min-w-0 bg-white relative">
+        {% include 'cockpit/partials/chat_panel.html' %}
+    </div>
+</div>
+{% endblock %}

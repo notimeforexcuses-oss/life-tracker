@@ -1,0 +1,36 @@
+<div class="space-y-4">
+    {% for prop in proposals %}
+    <div class="p-4 bg-white rounded-lg border border-gray-200 shadow-sm animate-fade-in" id="proposal-{{ prop.id }}">
+        <div class="flex justify-between items-start mb-2">
+            <span class="text-[10px] font-bold text-blue-600 uppercase tracking-widest">
+                Legislative Proposal
+            </span>
+            <span class="text-[10px] text-gray-400">{{ prop.created_at }}</span>
+        </div>
+        <p class="text-sm font-medium text-gray-900 mb-1">{{ prop.trigger_condition }}</p>
+        <div class="bg-gray-50 p-2 rounded text-xs text-gray-600 font-mono mb-3">
+            {{ prop.proposed_action }}
+        </div>
+        <div class="flex space-x-2">
+            <button hx-post="/api/proposals/{{ prop.id }}/act/" 
+                    hx-vals='{"action": "approve"}'
+                    hx-target="#proposal-{{ prop.id }}"
+                    hx-swap="innerHTML"
+                    class="text-xs px-3 py-1.5 bg-green-600 text-white rounded hover:bg-green-700 transition-colors font-bold">
+                Approve
+            </button>
+            <button hx-post="/api/proposals/{{ prop.id }}/act/" 
+                    hx-vals='{"action": "reject"}'
+                    hx-target="#proposal-{{ prop.id }}"
+                    hx-swap="innerHTML"
+                    class="text-xs px-3 py-1.5 bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors">
+                Dismiss
+            </button>
+        </div>
+    </div>
+    {% empty %}
+    <div class="text-center py-6">
+        <p class="text-gray-400 text-sm italic">No pending legislation.</p>
+    </div>
+    {% endfor %}
+</div>

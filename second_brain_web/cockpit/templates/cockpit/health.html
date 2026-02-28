@@ -1,0 +1,223 @@
+{% extends 'cockpit/base.html' %}
+
+{% block title %}Health | Second Brain{% endblock %}
+
+{% block content %}
+<style>
+    [x-cloak] { display: none !important; }
+
+    /* Skeleton Animation */
+    @keyframes pulse-bg {
+        0%, 100% { background-color: #f3f4f6; }
+        50% { background-color: #e5e7eb; }
+    }
+    .animate-pulse-slow {
+        animation: pulse-bg 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+</style>
+<div class="flex h-full" id="main-app-layout" 
+     x-data="{ currentTab: '{{ current_view }}' }"
+     x-init="setTimeout(() => { document.getElementById('health-heading').focus(); }, 200)"
+     @health-changed.window="$nextTick(() => $refs[currentTab + 'Btn'].click())"
+     @keydown.window.alt.f.prevent="currentTab = 'fitness'; $nextTick(() => $refs.fitnessBtn.click())"
+     @keydown.window.alt.u.prevent="currentTab = 'nutrition'; $nextTick(() => $refs.nutritionBtn.click())"
+     @keydown.window.alt.s.prevent="currentTab = 'sleep'; $nextTick(() => $refs.sleepBtn.click())"
+     @keydown.window.alt.n.prevent="document.getElementById('btn-new-health').click()">
+
+    <!-- SIDEBAR -->
+    <aside class="w-80 border-r border-gray-200 bg-gray-50 flex-shrink-0 flex flex-col overflow-hidden">
+        
+        <!-- Heading (Outside Nav) -->
+        <div class="p-4 border-b border-gray-200 bg-white flex-shrink-0">
+            <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2 focus:outline-none" id="health-heading" tabindex="-1">
+                <span aria-hidden="true">❤️</span> Health
+            </h1>
+        </div>
+
+        <nav class="flex-1 flex flex-col overflow-hidden" aria-label="Health modules">
+            
+            <!-- View Switchers (Visual Grouping) -->
+            <div class="p-4 flex flex-col gap-2 bg-gray-100/50">
+                <button @click="currentTab = 'fitness'"
+                        x-ref="fitnessBtn"
+                        hx-get="{% url 'render_health_content' %}?view=fitness"
+                        hx-target="#health-content"
+                        :class="currentTab === 'fitness' ? 'bg-green-100 text-green-900 border-green-300' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'"
+                        class="w-full text-left px-4 py-3 rounded-lg border font-bold shadow-sm transition-all flex items-center justify-between focus:ring-2 focus:ring-green-500 outline-none"
+                        aria-label="Fitness (Alt+F)">
+                    <span class="flex items-center gap-2"><span aria-hidden="true">💪</span> Fitness</span>
+                </button>
+
+                <button @click="currentTab = 'nutrition'"
+                        x-ref="nutritionBtn"
+                        hx-get="{% url 'render_health_content' %}?view=nutrition"
+                        hx-target="#health-content"
+                        :class="currentTab === 'nutrition' ? 'bg-orange-100 text-orange-900 border-orange-300' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'"
+                        class="w-full text-left px-4 py-3 rounded-lg border font-bold shadow-sm transition-all flex items-center justify-between focus:ring-2 focus:ring-orange-500 outline-none"
+                        aria-label="Nutrition (Alt+U)">
+                    <span class="flex items-center gap-2"><span aria-hidden="true">🍎</span> Nutrition</span>
+                </button>
+
+                <button @click="currentTab = 'sleep'"
+                        x-ref="sleepBtn"
+                        hx-get="{% url 'render_health_content' %}?view=sleep"
+                        hx-target="#health-content"
+                        :class="currentTab === 'sleep' ? 'bg-indigo-100 text-indigo-900 border-indigo-300' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'"
+                        class="w-full text-left px-4 py-3 rounded-lg border font-bold shadow-sm transition-all flex items-center justify-between focus:ring-2 focus:ring-indigo-500 outline-none"
+                        aria-label="Sleep (Alt+S)">
+                    <span class="flex items-center gap-2"><span aria-hidden="true">💤</span> Sleep</span>
+                </button>
+            </div>
+
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-1 flex flex-col min-w-0 bg-white">
+        
+        <!-- Action Bar -->
+        <div class="p-4 border-b border-gray-200 bg-white flex justify-between items-center shadow-sm z-10">
+            <div>
+                <div class="flex items-center" role="none">
+                    <h2 id="health-fitness-heading" 
+                        x-show="currentTab === 'fitness'" 
+                        tabindex="-1" 
+                        role="heading" aria-level="2"
+                        class="text-lg font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 rounded px-1">
+                        Fitness
+                    </h2>
+                    <h2 id="health-nutrition-heading" 
+                        x-show="currentTab === 'nutrition'" 
+                        tabindex="-1" 
+                        role="heading" aria-level="2"
+                        x-cloak
+                        class="text-lg font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 rounded px-1">
+                        Nutrition
+                    </h2>
+                    <h2 id="health-sleep-heading" 
+                        x-show="currentTab === 'sleep'" 
+                        tabindex="-1" 
+                        role="heading" aria-level="2"
+                        x-cloak
+                        class="text-lg font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded px-1">
+                        Sleep
+                    </h2>
+                </div>
+            </div>
+
+            <div id="health-focus-transit" tabindex="-1" class="sr-only" aria-hidden="true"></div>
+
+            <div class="flex gap-2">
+                <button type="button" 
+                        onclick="toggleChatDrawer(true)"
+                        class="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg font-bold shadow-sm flex items-center gap-2 transition-transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-500 border border-gray-300"
+                        aria-label="Agent Chat (Alt+C)">
+                    <span aria-hidden="true">🤖</span> Chat
+                </button>
+
+                <div class="w-px h-8 bg-gray-200 mx-1"></div>
+
+                <button id="btn-new-health"
+                        type="button"
+                        onclick="playSystemSound('open_modal')"
+                        @click="let type = (currentTab === 'fitness' ? 'workout' : (currentTab === 'nutrition' ? 'meal' : 'sleep')); 
+                                htmx.ajax('GET', '{% url 'render_health_modal' %}?type=' + type, {target: '#modal-container'})"
+                        :class="{
+                            'bg-green-600 hover:bg-green-700 focus:ring-green-500': currentTab === 'fitness',
+                            'bg-orange-600 hover:bg-orange-700 focus:ring-orange-500': currentTab === 'nutrition',
+                            'bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500': currentTab === 'sleep'
+                        }"
+                        class="px-4 py-2 text-white rounded-lg font-bold shadow-md flex items-center gap-2 transition-all active:scale-95 focus:outline-none focus:ring-2"
+                        aria-label="Log New Entry (Alt+N)">
+                    <span class="text-xl" aria-hidden="true">+</span>
+                    <span>New</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div id="health-content" class="flex-1 overflow-y-auto bg-gray-50 p-6 scroll-smooth" 
+             hx-get="{% url 'render_health_content' %}?view={{ current_view }}&v=3" 
+             hx-trigger="load">
+            <!-- Skeleton Loader State (Visible during HTMX swaps) -->
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="h-32 bg-gray-200 rounded-2xl animate-pulse-slow"></div>
+                    <div class="h-32 bg-gray-200 rounded-2xl animate-pulse-slow"></div>
+                    <div class="h-32 bg-gray-200 rounded-2xl animate-pulse-slow"></div>
+                </div>
+                <div class="space-y-4">
+                    <div class="h-20 bg-gray-200 rounded-2xl animate-pulse-slow w-full"></div>
+                    <div class="h-20 bg-gray-200 rounded-2xl animate-pulse-slow w-full"></div>
+                    <div class="h-20 bg-gray-200 rounded-2xl animate-pulse-slow w-full"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initial focus on the sidebar heading
+        setTimeout(() => {
+            const heading = document.getElementById('health-heading');
+            if (heading) heading.focus();
+        }, 200);
+
+        // Global HTMX listener for Health-specific content settling
+        document.body.addEventListener('htmx:afterSettle', function (evt) {
+            const targetId = evt.detail.target.id;
+            
+            // Handle content reloads (like switching views)
+            if (targetId === 'health-content') {
+                const transit = document.getElementById('health-focus-transit');
+                const fitnessHead = document.getElementById('health-fitness-heading');
+                const nutritionHead = document.getElementById('health-nutrition-heading');
+                const sleepHead = document.getElementById('health-sleep-heading');
+                
+                // Buffer to ensure Alpine has finished display toggles
+                setTimeout(() => {
+                    // 1. Move focus to transit element first to clear screen reader state
+                    if (transit) transit.focus();
+
+                    // 2. Identify and focus the visible heading in next animation frame
+                    requestAnimationFrame(() => {
+                        let target = null;
+                        if (fitnessHead && fitnessHead.style.display !== 'none') target = fitnessHead;
+                        else if (nutritionHead && nutritionHead.style.display !== 'none') target = nutritionHead;
+                        else if (sleepHead && sleepHead.style.display !== 'none') target = sleepHead;
+
+                        if (target) {
+                            target.focus();
+                            console.log("[Health] Transit focus completed. Routed to:", target.innerText);
+                        }
+                    });
+                }, 150);
+            }
+
+            // Handle Hydration Widget Updates
+            if (targetId === 'hydration-widget') {
+                setTimeout(() => {
+                    const heading = document.getElementById('hydration-heading');
+                    if (heading) heading.focus();
+                }, 50);
+            }
+            
+            // Handle modal closure focus return to action bar (pick visible heading)
+            if (targetId === 'modal-container' && evt.detail.target.innerHTML.trim() === "") {
+                setTimeout(() => {
+                    const headings = [
+                        document.getElementById('health-fitness-heading'),
+                        document.getElementById('health-nutrition-heading'),
+                        document.getElementById('health-sleep-heading')
+                    ];
+                    const visible = headings.find(h => h && h.style.display !== 'none');
+                    if (visible) visible.focus();
+                }, 100);
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,106 @@
+<div id="project-overview-{{ project.id }}" 
+     class="mt-8 border-t-2 border-blue-100 pt-8 animate-fade-in"
+     hx-get="/api/render_project_stage/{{ project.id }}/?target_container={{ target_container|urlencode }}"
+     hx-trigger="tasks-changed from:body"
+     hx-target="this"
+     hx-swap="outerHTML">
+    
+    <div class="flex justify-between items-start mb-4">
+        <div class="flex-1">
+            <h3 id="project-overview-heading" class="text-2xl font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1" tabindex="-1">
+                📂 {{ project.title }}
+            </h3>
+            <p class="text-gray-600 mt-1 leading-relaxed">{{ project.description|default:"No description provided." }}</p>
+        </div>
+
+        <div class="flex items-center space-x-2 ml-4">
+            <button hx-get="/api/projects/{{ project.id }}/settings/" 
+                    hx-target="#modal-container"
+                    onclick="playSystemSound('success')"
+                    class="text-gray-400 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Project Settings">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            </button>
+
+            {% if project.goal %}
+                <button onclick="playSystemSound('close'); document.getElementById('active-project-stage').innerHTML = ''; document.getElementById('goal-overview-heading').focus();"
+                        class="text-gray-400 hover:text-red-600 p-2 rounded-full hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
+                        aria-label="Close Project Overview">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            {% else %}
+                <button hx-get="/api/render_global_view"
+                        hx-target="#task-list-container"
+                        onclick="playSystemSound('close')"
+                        class="text-gray-400 hover:text-red-600 p-2 rounded-full hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
+                        aria-label="Close Project Overview">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mb-8 flex flex-col md:flex-row gap-8 items-start">
+        <div class="flex-1 w-full">
+            <div class="flex justify-between text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                <span>Project Progress</span>
+                <span>{{ project.percent_complete }}%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3" aria-hidden="true">
+                <div class="{{ project.progress_color }} h-3 rounded-full shadow-md transition-all duration-700 ease-out" style="width: {{ project.percent_complete }}%"></div>
+            </div>
+        </div>
+        
+        <div class="w-full md:w-64 flex-shrink-0 bg-gray-50 p-3 rounded-lg border border-gray-200">
+            {% include 'cockpit/partials/assignee_list.html' with entity_type='project' entity_id=project.id %}
+        </div>
+    </div>
+
+    <div class="mb-6">
+        <form hx-post="{% url 'process_create_item' %}" 
+              hx-swap="none"
+              hx-on::before-request="sessionStorage.setItem('keep_quick_add_focus', 'true')"
+              hx-on::after-request="this.reset()"
+              class="relative group">
+            <input type="hidden" name="item_type" value="task">
+            <input type="hidden" name="linked_project_id" value="{{ project.id }}">
+            
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-400 group-focus-within:text-blue-500 font-bold text-lg transition-colors">+</span>
+            </div>
+
+            <input type="text" name="title" 
+                   id="quick-task-input"
+                   placeholder="Add a new task to {{ project.title }}... (Press Enter)" 
+                   class="w-full p-3 pl-10 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white hover:bg-gray-50 focus:bg-white"
+                   autocomplete="off">
+        </form>
+    </div>
+
+    <div>
+        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Project Tasks</h4>
+        
+        <ul id="project-task-list" class="space-y-3">
+            {% for task in tasks %}
+                {% include 'cockpit/partials/task_item.html' with task=task return_focus="project-overview-heading" %}
+            {% empty %}
+                <div class="text-center py-10 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                    <p class="text-gray-500 font-medium">No pending tasks in this project. Great job!</p>
+                </div>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            const input = document.getElementById('quick-task-input');
+            if (sessionStorage.getItem('keep_quick_add_focus') === 'true') {
+                if (input) input.focus();
+                sessionStorage.removeItem('keep_quick_add_focus');
+            } else {
+                const h3 = document.getElementById('project-overview-heading');
+                if (h3) h3.focus();
+            }
+        }, 50);
+    </script>
+</div>

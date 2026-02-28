@@ -1,0 +1,132 @@
+<div class="flex flex-col h-full bg-white relative">
+    
+    <!-- HEADER -->
+    <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 shadow-sm z-10">
+        <h2 id="chat-panel-heading" tabindex="-1" class="text-lg font-bold text-gray-800 flex items-center gap-2 focus:outline-none">
+            <span aria-hidden="true">🤖</span> Agent Chat
+        </h2>
+        <div class="flex items-center gap-2">
+            <!-- Close button handled by base.html toggle -->
+        </div>
+    </div>
+
+    <!-- HISTORY (Scrollable) -->
+    <div id="chat-history-container" 
+         class="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth pb-24"
+         aria-live="polite">
+        
+        <!-- INITIAL GREETING (If empty) -->
+        {% if not messages and not chat_history %}
+        <div class="text-center text-gray-400 mt-10 italic animate-fade-in">
+            <p>How can I help you today?</p>
+        </div>
+        {% endif %}
+
+        <!-- MESSAGE LOOP (DATABASE PERSISTED) -->
+        {% for msg in messages %}
+            {% if msg.role == 'user' %}
+                <div class="flex flex-col items-end animate-fade-in">
+                    <h3 class="sr-only">You said:</h3>
+                    <div class="bg-gray-100 text-gray-800 px-4 py-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-sm text-base leading-relaxed">
+                        {{ msg.content }}
+                    </div>
+                </div>
+            {% else %}
+                <div class="flex flex-col items-start animate-fade-in">
+                    <h3 class="sr-only">Agent replied:</h3>
+                    <div class="bg-blue-50 text-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[90%] shadow-sm border border-blue-100 prose prose-sm max-w-none text-base leading-relaxed">
+                        {{ msg.content|safe }}
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <!-- OLD SESSION FALLBACK (If needed) -->
+        {% for msg in chat_history %}
+            <!-- USER MESSAGE -->
+            <div class="flex flex-col items-end animate-fade-in">
+                <h3 class="sr-only">You said:</h3>
+                <div class="bg-gray-100 text-gray-800 px-4 py-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-sm text-base leading-relaxed">
+                    {{ msg.user_message }}
+                </div>
+            </div>
+
+            <!-- AI RESPONSE -->
+            <div class="flex flex-col items-start animate-fade-in">
+                <h3 class="sr-only">Agent replied:</h3>
+                <div class="bg-blue-50 text-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[90%] shadow-sm border border-blue-100 prose prose-sm max-w-none text-base leading-relaxed">
+                    {{ msg.ai_response|safe }}
+                </div>
+            </div>
+        {% endfor %}
+        
+    </div>
+
+    <!-- INPUT AREA (Fixed Bottom) -->
+    <div class="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-20">
+        <form hx-post="{% url 'chat_api' %}" 
+              hx-target="#chat-history-container" 
+              hx-swap="beforeend"
+              hx-on:htmx:before-request="
+                  const input = document.getElementById('chat-input');
+                  const msg = input.value;
+                  if(msg.trim()) {
+                      // Immediate Auditory Pulse
+                      if(window.brainAnnounce) window.brainAnnounce('Brain is thinking...');
+                      
+                      const container = document.getElementById('chat-history-container');
+                      const div = document.createElement('div');
+                      div.className = 'flex flex-col items-end animate-fade-in';
+                      // Basic escape for safety
+                      const safeMsg = msg.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                      div.innerHTML = `<h3 class='sr-only'>You said:</h3><div class='bg-gray-100 text-gray-800 px-4 py-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-sm text-base leading-relaxed'>${safeMsg}</div>`;
+                      container.appendChild(div);
+                      container.scrollTop = container.scrollHeight;
+                      input.value = '';
+                      document.getElementById('chat-loading').classList.remove('hidden');
+                  }"
+              hx-on:htmx:after-request="
+                  document.getElementById('chat-loading').classList.add('hidden'); 
+                  const container = document.getElementById('chat-history-container');
+                  container.scrollTop = container.scrollHeight;
+                  
+                  // Only auto-focus if the Brain hasn't specifically moved focus elsewhere
+                  if (!window.suppressAutoFocus) {
+                      document.getElementById('chat-input').focus();
+                  }
+              "
+              class="relative">
+            
+            <!-- Context & Session Hidden Inputs -->
+            <input type="hidden" name="context_url" id="chat-context-url">
+            <input type="hidden" name="session_id" value="{{ active_session_id }}">
+
+            <div class="relative">
+                <textarea id="chat-input" name="message" rows="1" 
+                          class="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 outline-none resize-none shadow-sm text-base"
+                          placeholder="Ask me anything..." required
+                          onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); this.form.requestSubmit(); }"></textarea>
+                
+                <button type="submit" 
+                        class="absolute right-2 top-1.5 p-1.5 bg-blue-600 text-white rounded-full hover:bg-blue-700 shadow-md transition-transform active:scale-95"
+                        aria-label="Send Message">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"></path></svg>
+                </button>
+            </div>
+            
+            <!-- Loading Indicator -->
+            <div id="chat-loading" class="hidden absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-3 py-1 rounded-full opacity-75">
+                Thinking...
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Update context on load
+    document.getElementById('chat-context-url').value = window.location.pathname;
+    
+    // Auto-scroll to bottom on load
+    const container = document.getElementById('chat-history-container');
+    if(container) container.scrollTop = container.scrollHeight;
+</script>

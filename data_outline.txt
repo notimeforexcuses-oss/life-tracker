@@ -1,0 +1,767 @@
+# DATA OUTLINE: SECOND BRAIN SAMPLE DATASET
+
+## 1. AREAS (7)
+1. Health & Wellness
+2. Career & Professional
+3. Finance & Wealth
+4. Family & Social
+5. Personal Growth & Learning
+6. Home & Environment
+7. Hobbies & Recreation
+
+---
+
+## 2. GOALS (14), PROJECTS (28), & TASKS (56)
+
+### AREA 1: Health & Wellness
+*   **Goal 1.1: Achieve and Maintain Optimal Physical Fitness**
+    *   *Importance:* Consistent physical health reduces the risk of chronic disease and increases daily energy levels.
+    *   **Project 1.1.1: Complete a 12-Week Strength Training Program**
+        *   *Scope:* Follow a structured weightlifting routine 3 times a week.
+        *   *Priority:* High
+        *   Task 1.1.1.1: Purchase adjustable dumbbells (Due: 2026-02-10, High)
+        *   Task 1.1.1.2: Print and log the first week's workout sheet (Due: 2026-02-12, Medium)
+    *   **Project 1.1.2: Improve Cardiovascular Endurance for a 5K**
+        *   *Scope:* Transition from walking to running 3.1 miles without stopping.
+        *   *Priority:* Medium
+        *   Task 1.1.2.1: Research a 'Couch to 5K' training app (Due: 2026-02-15, Medium)
+        *   Task 1.1.2.2: Map out a safe 1-mile running route in the neighborhood (Due: 2026-02-18, Low)
+
+*   **Goal 1.2: Prioritize Mental Health and Stress Management**
+    *   *Importance:* Mental clarity and emotional resilience are foundational for navigating life's challenges.
+    *   **Project 1.2.1: Establish a Daily Mindfulness Practice**
+        *   *Scope:* Meditate for 10 minutes every morning for 30 consecutive days.
+        *   *Priority:* High
+        *   Task 1.2.1.1: Create a dedicated quiet space in the bedroom (Due: 2026-02-08, Medium)
+        *   Task 1.2.1.2: Set a recurring daily reminder on the phone (Due: 2026-02-08, Low)
+    *   **Project 1.2.2: Reduce Digital Clutter and Screen Time**
+        *   *Scope:* Unsubscribe from unused emails and set strict phone-free hours.
+        *   *Priority:* Medium
+        *   Task 1.2.2.1: Audit and unsubscribe from 20 promotional newsletters (Due: 2026-02-20, Low)
+        *   Task 1.2.2.2: Enable 'App Limits' for social media on smartphone (Due: 2026-02-21, Medium)
+
+### AREA 2: Career & Professional
+*   **Goal 2.1: Advance Technical Skills for Future Promotion**
+    *   *Importance:* Continuous learning ensures job security and opens doors for higher compensation.
+    *   **Project 2.1.1: Earn a Professional Certification in Data Analysis**
+        *   *Scope:* Complete the coursework and pass the final exam for the Google Data Analytics Cert.
+        *   *Priority:* High
+        *   Task 2.1.1.1: Register for the online course platform (Due: 2026-02-11, High)
+        *   Task 2.1.1.2: Schedule 2 hours of study time for Sunday afternoon (Due: 2026-02-15, Medium)
+    *   **Project 2.1.2: Build a Professional Portfolio Website**
+        *   *Scope:* Create a site showcasing 3 major work projects and a detailed bio.
+        *   *Priority:* Medium
+        *   Task 2.1.2.1: Select and purchase a personal domain name (Due: 2026-03-01, Medium)
+        *   Task 2.1.2.2: Write descriptions for the 'About Me' and 'Experience' pages (Due: 2026-03-05, Low)
+
+*   **Goal 2.2: Expand Professional Network and Influence**
+    *   *Importance:* Strong professional relationships lead to mentorship opportunities and hidden job markets.
+    *   **Project 2.2.1: Conduct 10 Informational Interviews**
+        *   *Scope:* Meet with 10 professionals in target roles to learn about their career paths.
+        *   *Priority:* High
+        *   Task 2.2.1.1: Identify 5 people on LinkedIn to reach out to first (Due: 2026-02-14, High)
+        *   Task 2.2.1.2: Draft a standard outreach script for emails (Due: 2026-02-16, Medium)
+    *   **Project 2.2.2: Update and Optimize LinkedIn Profile**
+        *   *Scope:* Rewrite the headline, about section, and request 3 new recommendations.
+        *   *Priority:* Medium
+        *   Task 2.2.2.1: Take and upload a professional-looking headshot (Due: 2026-02-25, Medium)
+        *   Task 2.2.2.2: Send recommendation requests to 2 former managers (Due: 2026-02-28, Low)
+
+### AREA 3: Finance & Wealth
+*   **Goal 3.1: Build a Robust Emergency Fund**
+    *   *Importance:* A financial safety net prevents debt during unexpected life events (job loss, medical bills).
+    *   **Project 3.1.1: Save $5,000 in a High-Yield Savings Account**
+        *   *Scope:* Automate monthly transfers until the $5k milestone is reached.
+        *   *Priority:* High
+        *   Task 3.1.1.1: Compare interest rates for 3 different online banks (Due: 2026-02-12, Medium)
+        *   Task 3.1.1.2: Set up an automatic transfer of $200 from checking to savings (Due: 2026-02-15, High)
+    *   **Project 3.1.2: Audit and Reduce Monthly Recurring Expenses**
+        *   *Scope:* Identify and cancel $50+ worth of unused subscriptions or memberships.
+        *   *Priority:* Medium
+        *   Task 3.1.2.1: Download and review the last 3 months of bank statements (Due: 2026-02-10, Medium)
+        *   Task 3.1.2.2: Cancel the premium music subscription that isn't being used (Due: 2026-02-11, Low)
+
+*   **Goal 3.2: Invest for Long-Term Financial Independence**
+    *   *Importance:* Strategic investing leverages compound interest to fund a comfortable retirement.
+    *   **Project 3.2.1: Maximize Annual Contributions to Retirement Accounts**
+        *   *Scope:* Ensure the maximum allowable amount is contributed to the 401k or IRA.
+        *   *Priority:* High
+        *   Task 3.2.1.1: Log into the HR portal to check current 401k contribution % (Due: 2026-02-09, Medium)
+        *   Task 3.2.1.2: Increase 401k contribution by 2% to reach the limit (Due: 2026-02-09, High)
+    *   **Project 3.2.2: Read and Implement 3 Core Investing Books**
+        *   *Scope:* Gain fundamental knowledge to manage a personal brokerage account.
+        *   *Priority:* Medium
+        *   Task 3.2.2.1: Buy or borrow 'The Simple Path to Wealth' (Due: 2026-02-20, Low)
+        *   Task 3.2.2.2: Outline a target asset allocation based on the book's advice (Due: 2026-03-10, Medium)
+
+### AREA 4: Family & Social
+*   **Goal 4.1: Cultivate Deeper Relationships with Immediate Family**
+    *   *Importance:* Strong family bonds provide emotional support and a sense of belonging.
+    *   **Project 4.1.1: Implement a Weekly Family Game Night**
+        *   *Scope:* Dedicate every Friday night to board games and quality time without electronics.
+        *   *Priority:* High
+        *   Task 4.1.1.1: Buy one new cooperative board game (Due: 2026-02-13, Medium)
+        *   Task 4.1.1.2: Create a 'Game Night' calendar invite for everyone (Due: 2026-02-11, Low)
+    *   **Project 4.1.2: Plan a Multi-Generational Summer Vacation**
+        *   *Scope:* Coordinate logistics for a 1-week cabin trip including parents and siblings.
+        *   *Priority:* Medium
+        *   Task 4.1.2.1: Send a poll to family members regarding available dates in July (Due: 2026-03-01, Medium)
+        *   Task 4.1.2.2: Research 3 cabin rentals that accommodate 8+ people (Due: 2026-03-15, Low)
+
+*   **Goal 4.2: Revitalize Friendships and Social Connections**
+    *   *Importance:* A diverse social circle prevents isolation and provides varied perspectives.
+    *   **Project 4.2.1: Host a Monthly Dinner Party for Friends**
+        *   *Scope:* Invite 4-6 people over for a home-cooked meal once a month.
+        *   *Priority:* Medium
+        *   Task 4.2.1.1: Decide on a theme for the first dinner (e.g., Taco Night) (Due: 2026-02-20, Low)
+        *   Task 4.2.1.2: Text the first group of friends to check their availability (Due: 2026-02-22, Medium)
+    *   **Project 4.2.2: Reconnect with 5 'Lost' Friends**
+        *   *Scope:* Reach out to 5 people I haven't spoken to in over a year.
+        *   *Priority:* Low
+        *   Task 4.2.2.1: Make a list of 5 people and find their current contact info (Due: 2026-02-15, Low)
+        *   Task 4.2.2.2: Send a 'Thinking of You' text to the first person on the list (Due: 2026-02-16, Low)
+
+### AREA 5: Personal Growth & Learning
+*   **Goal 5.1: Master a Second Language (Spanish)**
+    *   *Importance:* Bilingualism improves cognitive function and allows for better communication in a global world.
+    *   **Project 5.1.1: Complete the Duolingo Spanish Tree**
+        *   *Scope:* Maintain a daily streak and finish all units in the Spanish course.
+        *   *Priority:* Medium
+        *   Task 5.1.1.1: Set a daily goal of 15 minutes in the app (Due: 2026-02-07, Low)
+        *   Task 5.1.1.2: Practice 5 new verbs and write them in sentences (Due: 2026-02-10, Medium)
+    *   **Project 5.1.2: Attend 12 Weekly Conversational Spanish Meetups**
+        *   *Scope:* Participate in live practice to improve speaking and listening fluency.
+        *   *Priority:* Medium
+        *   Task 5.1.2.1: Join a local Spanish language group on Meetup.com (Due: 2026-02-14, Medium)
+        *   Task 5.1.2.2: RSVP for the next Tuesday evening session (Due: 2026-02-15, Low)
+
+*   **Goal 5.2: Develop a Consistent Daily Reading Habit**
+    *   *Importance:* Reading broadens knowledge, improves focus, and reduces stress.
+    *   **Project 5.2.1: Read 24 Books in One Year**
+        *   *Scope:* Read an average of 2 books per month across various genres.
+        *   *Priority:* Medium
+        *   Task 5.2.1.1: Create a 'To Read' list of 10 initial titles (Due: 2026-02-15, Low)
+        *   Task 5.2.1.2: Finish the first 50 pages of the current book (Due: 2026-02-10, Medium)
+    *   **Project 5.2.2: Curate a High-Quality Digital Learning Feed**
+        *   *Scope:* Follow 10 educational podcasts and 5 high-value newsletters.
+        *   *Priority:* Low
+        *   Task 5.2.2.1: Subscribe to the 'Huberman Lab' podcast (Due: 2026-02-12, Low)
+        *   Task 5.2.2.2: Sign up for the 'Morning Brew' or 'Daily Stoic' newsletter (Due: 2026-02-13, Low)
+
+### AREA 6: Home & Environment
+*   **Goal 6.1: Create a Highly Organized and Clutter-Free Living Space**
+    *   *Importance:* An orderly environment reduces mental load and improves daily efficiency.
+    *   **Project 6.1.1: Deep Clean and Organize the Kitchen Pantry**
+        *   *Scope:* Empty all shelves, discard expired items, and use labeled bins for organization.
+        *   *Priority:* Medium
+        *   Task 6.1.1.1: Buy a set of 10 clear airtight containers (Due: 2026-02-18, Medium)
+        *   Task 6.1.1.2: Sort through all spices and toss those older than 2 years (Due: 2026-02-20, Low)
+    *   **Project 6.1.2: Implement a 'One-In, One-Out' Rule for Clothing**
+        *   *Scope:* Donate or sell one old item for every new item purchased.
+        *   *Priority:* Low
+        *   Task 6.1.2.1: Clear out 5 items from the closet to start a 'Donation' bag (Due: 2026-02-12, Medium)
+        *   Task 6.1.2.2: Drop off the donation bag at the local shelter (Due: 2026-02-28, Low)
+
+*   **Goal 6.2: Complete Essential Home Maintenance and Upgrades**
+    *   *Importance:* Proper maintenance protects the value of the home and prevents costly future repairs.
+    *   **Project 6.2.1: Weatherize the Home for Winter**
+        *   *Scope:* Seal windows, service the furnace, and insulate outdoor pipes.
+        *   *Priority:* High
+        *   Task 6.2.1.1: Purchase weather stripping for the front and back doors (Due: 2026-02-15, High)
+        *   Task 6.2.1.2: Call the HVAC technician for a furnace tune-up (Due: 2026-02-10, Medium)
+    *   **Project 6.2.2: Upgrade Home Office Lighting and Ergonomics**
+        *   *Scope:* Install a high-quality desk lamp and replace the current chair with an ergonomic one.
+        *   *Priority:* Medium
+        *   Task 6.2.2.1: Research top-rated ergonomic chairs under $400 (Due: 2026-03-01, Medium)
+        *   Task 6.2.2.2: Order a monitor light bar to reduce eye strain (Due: 2026-03-05, Low)
+
+### AREA 7: Hobbies & Recreation
+*   **Goal 7.1: Develop Proficiency in Amateur Photography**
+    *   *Importance:* Photography encourages mindfulness and provides a creative outlet for self-expression.
+    *   **Project 7.1.1: Complete an 'Introduction to Manual Mode' Course**
+        *   *Scope:* Learn to control ISO, Aperture, and Shutter Speed for better exposures.
+        *   *Priority:* Medium
+        *   Task 7.1.1.1: Watch the first 3 modules of the YouTube photography series (Due: 2026-02-15, Medium)
+        *   Task 7.1.1.2: Take 20 practice shots using only Manual mode (Due: 2026-02-16, Low)
+    *   **Project 7.1.2: Create a 'Best of 2026' Photo Book**
+        *   *Scope:* Select and edit 50 high-quality photos from the year and print them.
+        *   *Priority:* Low
+        *   Task 7.1.2.1: Create a folder on the computer to store 'Selects' monthly (Due: 2026-02-28, Low)
+        *   Task 7.1.2.2: Edit the 5 best photos from February (Due: 2026-03-01, Low)
+
+*   **Goal 7.2: Explore the Local Region through Hiking**
+    *   *Importance:* Hiking promotes physical health and provides connection with nature.
+    *   **Project 7.2.1: Hike all 10 'Signature Trails' in the State Park**
+        *   *Scope:* Complete every trail listed in the park's official guidebook by October.
+        *   *Priority:* Medium
+        *   Task 7.2.1.1: Purchase a sturdy pair of waterproof hiking boots (Due: 2026-03-15, High)
+        *   Task 7.2.1.2: Download the AllTrails maps for the first 3 hikes (Due: 2026-03-20, Low)
+    *   **Project 7.2.2: Learn Basic Wilderness First Aid**
+        *   *Scope:* Complete an 8-hour certification course on trail safety and emergency response.
+        *   *Priority:* High
+        *   Task 7.2.2.1: Find a local Red Cross or REI class schedule (Due: 2026-04-01, Medium)
+        *   Task 7.2.2.2: Assemble a portable first-aid kit for the daypack (Due: 2026-04-10, High)
+
+---
+
+## 3. CONTACTS (50)
+
+1.  **Name:** Sarah Jenkins | **Relationship:** Family | **Tier:** VIP | **Org:** Self-employed | **Job:** Graphic Designer | **Phone:** 555-0101 | **Email:** sarah.j@email.com | **Address:** 123 Maple St, Phoenix, AZ | **Notes:** Sister. Birthday is June 14. Loves succulents.
+2.  **Name:** Dr. Robert Miller | **Relationship:** Professional | **Tier:** Tier 1 | **Org:** Valley Health | **Job:** Primary Care Physician | **Phone:** 555-0102 | **Email:** dr.miller@valleyhealth.org | **Address:** 456 Medical Plaza, Scottsdale, AZ | **Notes:** Family doctor for 10 years. Very thorough.
+3.  **Name:** Mark Thompson | **Relationship:** Friend | **Tier:** Tier 2 | **Org:** TechCorp | **Job:** Software Engineer | **Phone:** 555-0103 | **Email:** m.thompson@email.com | **Address:** 789 Desert View Dr, Tempe, AZ | **Notes:** College roommate. Into mountain biking.
+4.  **Name:** Elena Rodriguez | **Relationship:** Work | **Tier:** Tier 1 | **Org:** Global Logistics | **Job:** Logistics Manager | **Phone:** 555-0104 | **Email:** e.rodriguez@globallog.com | **Address:** 321 Industrial Way, Phoenix, AZ | **Notes:** Current boss. Prefers early morning meetings.
+5.  **Name:** James Wilson | **Relationship:** Family | **Tier:** VIP | **Org:** Retired | **Job:** N/A | **Phone:** 555-0105 | **Email:** j.wilson@email.com | **Address:** 555 Oak Ln, Mesa, AZ | **Notes:** Father. Likes historical biographies.
+6.  **Name:** Linda Wilson | **Relationship:** Family | **Tier:** VIP | **Org:** School District | **Job:** Teacher | **Phone:** 555-0106 | **Email:** l.wilson@email.com | **Address:** 555 Oak Ln, Mesa, AZ | **Notes:** Mother. Avid gardener.
+7.  **Name:** David Chen | **Relationship:** Professional | **Tier:** Tier 2 | **Org:** Chen & Assoc | **Job:** Tax Accountant | **Phone:** 555-0107 | **Email:** david@chentax.com | **Address:** 999 Financial Cir, Chandler, AZ | **Notes:** Met at networking event. Expert in small business tax.
+8.  **Name:** Karen White | **Relationship:** Friend | **Tier:** Tier 2 | **Org:** City Library | **Job:** Librarian | **Phone:** 555-0108 | **Email:** k.white@email.com | **Address:** 111 Bookwyrm Ln, Gilbert, AZ | **Notes:** Book club member. Great source for recommendations.
+9.  **Name:** Thomas Baker | **Relationship:** Neighbor | **Tier:** Tier 3 | **Org:** City Services | **Job:** Civil Engineer | **Phone:** 555-0109 | **Email:** t.baker@email.com | **Address:** 125 Maple St, Phoenix, AZ | **Notes:** Lives next door. Has a very friendly Golden Retriever.
+10. **Name:** Jessica Lee | **Relationship:** Work | **Tier:** Tier 2 | **Org:** Global Logistics | **Job:** HR Coordinator | **Phone:** 555-0110 | **Email:** j.lee@globallog.com | **Address:** 321 Industrial Way, Phoenix, AZ | **Notes:** Helpful with benefit questions.
+11. **Name:** Michael Brown | **Relationship:** Professional | **Tier:** Tier 1 | **Org:** Brown Legal | **Job:** Attorney | **Phone:** 555-0111 | **Email:** mike@brownlegal.com | **Address:** 444 Justice Plaza, Phoenix, AZ | **Notes:** Specialist in estate planning.
+12. **Name:** Susan Clark | **Relationship:** Friend | **Tier:** Tier 3 | **Org:** Local Cafe | **Job:** Owner | **Phone:** 555-0112 | **Email:** susan@thecafe.com | **Address:** 777 Morning St, Mesa, AZ | **Notes:** Makes the best sourdough in town.
+13. **Name:** Kevin Martinez | **Relationship:** Work | **Tier:** Tier 2 | **Org:** TechCorp | **Job:** QA Tester | **Phone:** 555-0113 | **Email:** k.martinez@techcorp.com | **Address:** 789 Tech Hub, Tempe, AZ | **Notes:** Worked together on the 2024 launch.
+14. **Name:** Patricia Garcia | **Relationship:** Family | **Tier:** Tier 2 | **Org:** St. Jude's | **Job:** Nurse | **Phone:** 555-0114 | **Email:** p.garcia@email.com | **Address:** 222 Willow Way, Scottsdale, AZ | **Notes:** Aunt. Always brings great dessert to holidays.
+15. **Name:** Daniel Moore | **Relationship:** Professional | **Tier:** Tier 2 | **Org:** Moore Renovations | **Job:** Contractor | **Phone:** 555-0115 | **Email:** dan@moorereno.com | **Address:** 888 Builder Blvd, Phoenix, AZ | **Notes:** Did the kitchen remodel. Reliable and fair.
+16. **Name:** Lisa Taylor | **Relationship:** Friend | **Tier:** Tier 2 | **Org:** Fit Gym | **Job:** Personal Trainer | **Phone:** 555-0116 | **Email:** lisa.t@fitgym.com | **Address:** 500 Active Way, Chandler, AZ | **Notes:** Yoga instructor. Very encouraging.
+17. **Name:** Steven Anderson | **Relationship:** Work | **Tier:** Tier 3 | **Org:** Global Logistics | **Job:** IT Support | **Phone:** 555-0117 | **Email:** s.anderson@globallog.com | **Address:** 321 Industrial Way, Phoenix, AZ | **Notes:** Go-to person for hardware issues.
+18. **Name:** Mary Thomas | **Relationship:** Family | **Tier:** Tier 3 | **Org:** Retired | **Job:** N/A | **Phone:** 555-0118 | **Email:** m.thomas@email.com | **Address:** 333 Sunset Blvd, Sun City, AZ | **Notes:** Grandmother. Loves bridge and crossword puzzles.
+19. **Name:** Paul Jackson | **Relationship:** Professional | **Tier:** Tier 2 | **Org:** Jackson Insurance | **Job:** Broker | **Phone:** 555-0119 | **Email:** paul@jacksonins.com | **Address:** 666 Security St, Gilbert, AZ | **Notes:** Handles the auto and home policies.
+20. **Name:** Nancy Harris | **Relationship:** Friend | **Tier:** Tier 3 | **Org:** N/A | **Job:** Artist | **Phone:** 555-0120 | **Email:** nancy.art@email.com | **Address:** 101 Creative Ct, Sedona, AZ | **Notes:** Met at a gallery opening. Does beautiful watercolors.
+21. **Name:** Brian Lewis | **Relationship:** Work | **Tier:** Tier 2 | **Org:** Global Logistics | **Job:** Sales Rep | **Phone:** 555-0121 | **Email:** b.lewis@globallog.com | **Address:** 321 Industrial Way, Phoenix, AZ | **Notes:** High energy. Good at negotiating.
+22. **Name:** Sandra Young | **Relationship:** Professional | **Tier:** Tier 3 | **Org:** Young Real Estate | **Job:** Realtor | **Phone:** 555-0122 | **Email:** sandra@youngre.com | **Address:** 202 Home St, Mesa, AZ | **Notes:** Helped with the house search in 2022.
+23. **Name:** George Hall | **Relationship:** Friend | **Tier:** Tier 2 | **Org:** University | **Job:** Professor | **Phone:** 555-0123 | **Email:** g.hall@uni.edu | **Address:** 404 Wisdom Way, Tempe, AZ | **Notes:** Chess partner. Extremely well-read.
+24. **Name:** Carol King | **Relationship:** Neighbor | **Tier:** Tier 3 | **Org:** Retired | **Job:** N/A | **Phone:** 555-0124 | **Email:** c.king@email.com | **Address:** 121 Maple St, Phoenix, AZ | **Notes:** Takes care of the mail when I'm away.
+25. **Name:** Edward Wright | **Relationship:** Work | **Tier:** Tier 1 | **Org:** Global Logistics | **Job:** CEO | **Phone:** 555-0125 | **Email:** e.wright@globallog.com | **Address:** 321 Industrial Way, Phoenix, AZ | **Notes:** Founder of the company. Values direct communication.
+26. **Name:** Amy Scott | **Relationship:** Friend | **Tier:** Tier 2 | **Org:** Non-Profit | **Job:** Volunteer Coord | **Phone:** 555-0126 | **Email:** a.scott@email.com | **Address:** 150 Giving Ln, Phoenix, AZ | **Notes:** Childhood friend. Passionate about animal rescue.
+27. **Name:** Frank Green | **Relationship:** Professional | **Tier:** Tier 2 | **Org:** Green Lawns | **Job:** Landscaper | **Phone:** 555-0127 | **Email:** frank@greenlawns.com | **Address:** 909 Turf Trl, Chandler, AZ | **Notes:** Keeps the yard looking great. Very dependable.
+28. **Name:** Alice Adams | **Relationship:** Family | **Tier:** VIP | **Org:** N/A | **Job:** Student | **Phone:** 555-0128 | **Email:** alice.a@email.com | **Address:** 123 Maple St, Phoenix, AZ | **Notes:** Niece. High school senior. Interested in biology.
+29. **Name:** Bob Baker | **Relationship:** Friend | **Tier:** Tier 3 | **Org:** Local Brewery | **Job:** Brewer | **Phone:** 555-0129 | **Email:** bob@craftbeer.com | **Address:** 555 Hops Ave, Tempe, AZ | **Notes:** Great guy. Always knows the best seasonal pours.
+30. **Name:** Charlie Cook | **Relationship:** Work | **Tier:** Tier 2 | **Org:** TechCorp | **Job:** Project Manager | **Phone:** 555-0130 | **Email:** c.cook@techcorp.com | **Address:** 789 Tech Hub, Tempe, AZ | **Notes:** Former colleague. Very organized.
+31. **Name:** Diana Dash | **Relationship:** Professional | **Tier:** Tier 2 | **Org:** Dash Delivery | **Job:** Courier | **Phone:** 555-0131 | **Email:** diana@dashdel.com | **Address:** 100 Speed Way, Phoenix, AZ | **Notes:** Reliable for urgent document transfers.
+32. **Name:** Ethan Evans | **Relationship:** Friend | **Tier:** Tier 2 | **Org:** Music Store | **Job:** Guitar Teacher | **Phone:** 555-0132 | **Email:** ethan@guitars.com | **Address:** 200 Rock Rd, Mesa, AZ | **Notes:** Taught me basic chords. Plays in a local jazz band.
+33. **Name:** Fiona Fish | **Relationship:** Family | **Tier:** Tier 3 | **Org:** Ocean Care | **Job:** Biologist | **Phone:** 555-0133 | **Email:** fiona@email.com | **Address:** 300 Wave Blvd, San Diego, CA | **Notes:** Cousin. Lives on the coast.
+34. **Name:** Gary Gold | **Relationship:** Professional | **Tier:** Tier 1 | **Org:** Gold Metals | **Job:** Owner | **Phone:** 555-0134 | **Email:** gary@goldmetals.com | **Address:** 400 Shiny St, Phoenix, AZ | **Notes:** Major client. Requires monthly status reports.
+35. **Name:** Helen Hill | **Relationship:** Friend | **Tier:** Tier 3 | **Org:** Travel Agency | **Job:** Agent | **Phone:** 555-0135 | **Email:** helen@travel.com | **Address:** 500 Globe Dr, Scottsdale, AZ | **Notes:** Helped plan the trip to Italy.
+36. **Name:** Ian Iron | **Relationship:** Work | **Tier:** Tier 3 | **Org:** Global Logistics | **Job:** Warehouse Mgr | **Phone:** 555-0136 | **Email:** i.iron@globallog.com | **Address:** 321 Industrial Way, Phoenix, AZ | **Notes:** Rough exterior but very efficient.
+37. **Name:** Jane Jump | **Relationship:** Professional | **Tier:** Tier 2 | **Org:** Jump Fitness | **Job:** Instructor | **Phone:** 555-0137 | **Email:** jane@jumpfit.com | **Address:** 600 Bouncy Blvd, Chandler, AZ | **Notes:** HIIT class teacher.
+38. **Name:** Kyle Kite | **Relationship:** Friend | **Tier:** Tier 2 | **Org:** Outdoor Shop | **Job:** Clerk | **Phone:** 555-0138 | **Email:** kyle@outdoors.com | **Address:** 700 Wind Ave, Gilbert, AZ | **Notes:** Expert on local hiking trails.
+39. **Name:** Laura Long | **Relationship:** Family | **Tier:** VIP | **Org:** Law Firm | **Job:** Partner | **Phone:** 555-0139 | **Email:** l.long@email.com | **Address:** 800 Gavel Rd, Phoenix, AZ | **Notes:** Sister-in-law. Very sharp and witty.
+40. **Name:** Mike Monk | **Relationship:** Professional | **Tier:** Tier 3 | **Org:** Monk's Books | **Job:** Owner | **Phone:** 555-0140 | **Email:** mike@monksbooks.com | **Address:** 900 Quiet St, Tempe, AZ | **Notes:** Source for rare and out-of-print books.
+41. **Name:** Nora Night | **Relationship:** Friend | **Tier:** Tier 2 | **Org:** Planetarium | **Job:** Astronomer | **Phone:** 555-0141 | **Email:** nora@stars.com | **Address:** 100 Galaxy Way, Phoenix, AZ | **Notes:** Great for stargazing trips.
+42. **Name:** Oscar Oven | **Relationship:** Work | **Tier:** Tier 2 | **Org:** Catering Co | **Job:** Chef | **Phone:** 555-0142 | **Email:** oscar@chef.com | **Address:** 200 Tasty Trl, Mesa, AZ | **Notes:** Catered the company holiday party.
+43. **Name:** Pam Park | **Relationship:** Professional | **Tier:** Tier 2 | **Org:** City Parks | **Job:** Ranger | **Phone:** 555-0143 | **Email:** pam@cityparks.gov | **Address:** 300 Nature Ln, Phoenix, AZ | **Notes:** Helpful with trail information.
+44. **Name:** Quinn Quick | **Relationship:** Friend | **Tier:** Tier 3 | **Org:** StartUp | **Job:** Founder | **Phone:** 555-0144 | **Email:** quinn@startup.io | **Address:** 400 Fast St, Scottsdale, AZ | **Notes:** Always has a new business idea.
+45. **Name:** Ray Rose | **Relationship:** Family | **Tier:** Tier 2 | **Org:** Retired | **Job:** N/A | **Phone:** 555-0145 | **Email:** ray@email.com | **Address:** 500 Flower Ave, Glendale, AZ | **Notes:** Uncle. Expert at woodworking.
+46. **Name:** Sara Star | **Relationship:** Work | **Tier:** Tier 1 | **Org:** TechCorp | **Job:** VP Engineering | **Phone:** 555-0146 | **Email:** s.star@techcorp.com | **Address:** 789 Tech Hub, Tempe, AZ | **Notes:** Key contact for the upcoming merger project.
+47. **Name:** Tom Tool | **Relationship:** Professional | **Tier:** Tier 3 | **Org:** Tool Time | **Job:** Mechanic | **Phone:** 555-0147 | **Email:** tom@tooltime.com | **Address:** 600 Repair Rd, Phoenix, AZ | **Notes:** Honest and reliable with car repairs.
+48. **Name:** Uma Under | **Relationship:** Friend | **Tier:** Tier 2 | **Org:** Scuba Inc | **Job:** Diver | **Phone:** 555-0148 | **Email:** uma@scuba.com | **Address:** 700 Deep Dr, Mesa, AZ | **Notes:** Met on vacation in Cozumel.
+49. **Name:** Victor View | **Relationship:** Professional | **Tier:** Tier 2 | **Org:** Clear Vision | **Job:** Optometrist | **Phone:** 555-0149 | **Email:** victor@vision.com | **Address:** 800 Sight St, Chandler, AZ | **Notes:** Very patient and explains things well.
+50. **Name:** Wendy Wind | **Relationship:** Friend | **Tier:** Tier 3 | **Org:** Weather Bureau | **Job:** Meteorologist | **Phone:** 555-0150 | **Email:** wendy@weather.com | **Address:** 900 Breeze Blvd, Phoenix, AZ | **Notes:** Provides accurate local forecasts.
+
+---
+
+## 4. JOURNAL ENTRIES (14)
+
+1.  **Date:** 2026-02-01 | **Time:** 08:30 | **Tags:** #morning #reflection #intentions | **Content:** Woke up feeling refreshed. Today's goal is to focus on deep work for the new project.
+2.  **Date:** 2026-02-01 | **Time:** 21:45 | **Tags:** #evening #gratitude #accomplishment | **Content:** Productivity was high today. Grateful for the quiet morning hours.
+3.  **Date:** 2026-02-02 | **Time:** 07:15 | **Tags:** #workout #energy #fitness | **Content:** Early morning strength session done. Feeling strong but need to prioritize hydration today.
+4.  **Date:** 2026-02-02 | **Time:** 18:30 | **Tags:** #family #dinner #connection | **Content:** Great dinner with the parents. Dad's stories are always a highlight.
+5.  **Date:** 2026-02-03 | **Time:** 09:00 | **Tags:** #work #stress #management | **Content:** High workload today. Taking 5-minute breathing breaks every hour to stay centered.
+6.  **Date:** 2026-02-03 | **Time:** 22:00 | **Tags:** #reading #learning #nightcap | **Content:** Read 20 pages of 'The Simple Path to Wealth'. The concept of F-You Money is empowering.
+7.  **Date:** 2026-02-04 | **Time:** 08:00 | **Tags:** #meditation #clarity #peace | **Content:** 15 minutes of mindfulness before the day starts. Noticed a significant drop in baseline anxiety.
+8.  **Date:** 2026-02-04 | **Time:** 19:00 | **Tags:** #social #friends #networking | **Content:** Met Mark for a quick coffee. Inspiring to hear about his progress at TechCorp.
+9.  **Date:** 2026-02-05 | **Time:** 07:30 | **Tags:** #weather #nature #hiking | **Content:** Planning a weekend hike. The forecast looks perfect—cool and clear.
+10. **Date:** 2026-02-05 | **Time:** 21:00 | **Tags:** #review #planning #fridayprep | **Content:** Weekly review completed. Projects are on track, but need to follow up with David Chen soon.
+11. **Date:** 2026-02-06 | **Time:** 08:15 | **Tags:** #finance #budget #milestone | **Content:** Just hit the first $1,000 in the emergency fund. Small wins lead to big results.
+12. **Date:** 2026-02-06 | **Time:** 17:30 | **Tags:** #weekend #unplugged #rest | **Content:** Setting the phone to 'Do Not Disturb' for the next 24 hours. Time to recharge.
+13. **Date:** 2026-02-07 | **Time:** 10:00 | **Tags:** #creativity #photography #hobby | **Content:** Spent the morning playing with aperture settings. Captured a great shot of the succulents.
+14. **Date:** 2026-02-07 | **Time:** 20:30 | **Tags:** #cooking #success #health | **Content:** Tried a new salmon recipe. Delicious and fits perfectly with the nutrition goals.
+15. **Date:** 2026-01-10 | **Time:** 09:00 | **Tags:** #reflection #planning | **Content:** First week of 2026 complete. Feeling optimistic. Need to finalize the strength training plan.
+16. **Date:** 2026-01-12 | **Time:** 06:30 | **Tags:** #fitness #newstart | **Content:** Day 1 of the PPL routine. Bench press form felt a bit shaky, but weights moved well.
+17. **Date:** 2026-01-15 | **Time:** 18:00 | **Tags:** #finance #payday | **Content:** Payday! Automated the emergency fund transfer. $200 closer to the $5k goal.
+18. **Date:** 2026-01-18 | **Time:** 21:00 | **Tags:** #rest #sunday | **Content:** Quiet day. Prepped lunches for the week. Ready to tackle the logistics strategy tomorrow.
+19. **Date:** 2026-01-20 | **Time:** 10:30 | **Tags:** #work #flow | **Content:** Found a great flow state while working on the Q1 strategy. Deep work really pays off.
+20. **Date:** 2026-01-22 | **Time:** 19:30 | **Tags:** #learning #spanish | **Content:** First Spanish meetup. Nervous to speak but everyone was welcoming. Need more vocab practice.
+21. **Date:** 2026-01-24 | **Time:** 22:30 | **Tags:** #social #books | **Content:** Great discussion at the book club. Mark's take on wealth psychology was fascinating.
+22. **Date:** 2026-01-27 | **Time:** 08:45 | **Tags:** #organization #admin | **Content:** Cleaned out 50 unread emails. Inbox zero feels amazing.
+23. **Date:** 2026-01-29 | **Time:** 14:00 | **Tags:** #legal #future | **Content:** Productive meeting with Michael Brown. Finalizing the trust feels like a big adulting win.
+24. **Date:** 2026-01-31 | **Time:** 23:00 | **Tags:** #monthlyreview | **Content:** End of January. 12 workouts done, $400 saved, 1 book read. Solid progress.
+25. **Date:** 2026-01-14 | **Time:** 07:00 | **Tags:** #energy #checkin | **Content:** Woke up a bit tired today. Increased water intake and feel better already.
+
+---
+
+## 5. NOTES (14)
+
+1.  **Title:** Project X Launch Strategy | **Tags:** #work #strategy #planning | **Content:** Focus on multi-channel outreach and early beta tester feedback.
+2.  **Title:** Healthy Grocery Staples | **Tags:** #health #shopping #nutrition | **Content:** List includes: spinach, blueberries, Greek yogurt, chicken breast, and quinoa.
+3.  **Title:** Retirement Account Comparison | **Tags:** #finance #investing #retirement | **Content:** Comparison of 401k employer match vs. Roth IRA tax advantages.
+4.  **Title:** Summer Vacation Ideas 2026 | **Tags:** #family #travel #vacation | **Content:** Potential locations: Flagstaff cabin, San Diego beach house, or Zion camping.
+5.  **Title:** Spanish Verbs - Common Irregulars | **Tags:** #learning #spanish #language | **Content:** Review 'ser', 'estar', 'ir', 'tener', and 'hacer' daily.
+6.  **Title:** Photography Lighting Tips | **Tags:** #hobby #photography #creativity | **Content:** Use 'Golden Hour' for portraits and side-lighting for texture.
+7.  **Title:** Emergency Preparedness Checklist | **Tags:** #home #safety #preparedness | **Content:** Check batteries, water storage, first aid kit, and important documents.
+8.  **Title:** Book List: Finance Top 5 | **Tags:** #reading #finance #knowledge | **Content:** 1. Simple Path to Wealth, 2. Psychology of Money, 3. Little Book of Common Sense Investing...
+9.  **Title:** Career Mentors Potential List | **Tags:** #career #networking #mentorship | **Content:** Consider reaching out to Sarah Star or Edward Wright for guidance.
+10. **Title:** Garden Planting Schedule (AZ) | **Tags:** #home #hobby #gardening | **Content:** Start tomatoes in Feb, peppers in March, okra in April.
+14. Title: Weekly Cleaning Routine | Tags: #home #organization #habit | Content: Mon: Kitchen, Tue: Bathroom, Wed: Floors, Thu: Dusting, Fri: Laundry.
+
+---
+
+## 6. WORKOUTS (12) - PPL ROUTINE (6:00 AM)
+
+### WEEK 1
+*   **2026-01-12 (Mon) - PUSH A**
+    *   *Notes:* Baseline week. Focused on form.
+    *   1. Bench Press: 3 sets x 10 reps @ 135 lbs
+    *   2. Overhead Press: 3 sets x 10 reps @ 95 lbs
+    *   3. Incline DB Flys: 3 sets x 10 reps @ 30 lbs
+    *   4. Tricep Pushdowns: 3 sets x 10 reps @ 40 lbs
+    *   5. Lateral Raises: 3 sets x 10 reps @ 15 lbs
+*   **2026-01-14 (Wed) - PULL A**
+    *   *Notes:* Grip strength felt a bit weak on deadlifts.
+    *   1. Romanian Deadlift: 3 sets x 8 reps @ 185 lbs
+    *   2. Lat Pulldowns: 3 sets x 10 reps @ 100 lbs
+    *   3. Seated Cable Rows: 3 sets x 10 reps @ 90 lbs
+    *   4. Face Pulls: 3 sets x 10 reps @ 30 lbs
+    *   5. Barbell Curls: 3 sets x 10 reps @ 45 lbs
+*   **2026-01-16 (Fri) - LEGS A**
+    *   *Notes:* First day of squats in a while. Depth was good.
+    *   1. Barbell Squats: 3 sets x 10 reps @ 155 lbs
+    *   2. Leg Press: 3 sets x 10 reps @ 200 lbs
+    *   3. Leg Curls: 3 sets x 10 reps @ 80 lbs
+    *   4. Calf Raises: 3 sets x 10 reps @ 100 lbs
+    *   5. Walking Lunges: 3 sets x 10 reps @ 25 lbs
+
+### WEEK 2
+*   **2026-01-19 (Mon) - PUSH B**
+    *   *Notes:* Bench felt easier this week. Increased weight slightly.
+    *   1. Bench Press: 3 sets x 10 reps @ 140 lbs
+    *   2. Overhead Press: 3 sets x 10 reps @ 100 lbs
+    *   3. Incline DB Flys: 3 sets x 10 reps @ 30 lbs
+    *   4. Tricep Pushdowns: 3 sets x 10 reps @ 45 lbs
+    *   5. Lateral Raises: 3 sets x 10 reps @ 15 lbs
+*   **2026-01-21 (Wed) - PULL B**
+    *   *Notes:* Pulldowns feeling very controlled.
+    *   1. Romanian Deadlift: 3 sets x 8 reps @ 195 lbs
+    *   2. Lat Pulldowns: 3 sets x 10 reps @ 110 lbs
+    *   3. Seated Cable Rows: 3 sets x 10 reps @ 100 lbs
+    *   4. Face Pulls: 3 sets x 10 reps @ 35 lbs
+    *   5. Barbell Curls: 3 sets x 10 reps @ 50 lbs
+*   **2026-01-23 (Fri) - LEGS B**
+    *   *Notes:* Legs quite sore after last Friday. Pushed through.
+    *   1. Barbell Squats: 3 sets x 10 reps @ 165 lbs
+    *   2. Leg Press: 3 sets x 10 reps @ 220 lbs
+    *   3. Leg Curls: 3 sets x 10 reps @ 85 lbs
+    *   4. Calf Raises: 3 sets x 10 reps @ 110 lbs
+    *   5. Walking Lunges: 3 sets x 10 reps @ 30 lbs
+
+### WEEK 3
+*   **2026-01-26 (Mon) - PUSH C**
+    *   *Notes:* Strong session. Bench felt great.
+    *   1. Bench Press: 3 sets x 10 reps @ 145 lbs
+    *   2. Overhead Press: 3 sets x 10 reps @ 105 lbs
+    *   3. Incline DB Flys: 3 sets x 10 reps @ 35 lbs
+    *   4. Tricep Pushdowns: 3 sets x 10 reps @ 50 lbs
+    *   5. Lateral Raises: 3 sets x 10 reps @ 20 lbs
+*   **2026-01-28 (Wed) - PULL C**
+    *   *Notes:* Deadlift form is improving. Core feels stable.
+    *   1. Romanian Deadlift: 3 sets x 8 reps @ 205 lbs
+    *   2. Lat Pulldowns: 3 sets x 10 reps @ 120 lbs
+    *   3. Seated Cable Rows: 3 sets x 10 reps @ 110 lbs
+    *   4. Face Pulls: 3 sets x 10 reps @ 40 lbs
+    *   5. Barbell Curls: 3 sets x 10 reps @ 55 lbs
+*   **2026-01-30 (Fri) - LEGS C**
+    *   *Notes:* Squat weight feels heavy but manageable.
+    *   1. Barbell Squats: 3 sets x 10 reps @ 175 lbs
+    *   2. Leg Press: 3 sets x 10 reps @ 240 lbs
+    *   3. Leg Curls: 3 sets x 10 reps @ 90 lbs
+    *   4. Calf Raises: 3 sets x 10 reps @ 120 lbs
+    *   5. Walking Lunges: 3 sets x 10 reps @ 35 lbs
+
+### WEEK 4
+*   **2026-02-02 (Mon) - PUSH D**
+    *   *Notes:* Hit 155 on bench for 10 reps! Major milestone.
+    *   1. Bench Press: 3 sets x 10 reps @ 155 lbs
+    *   2. Overhead Press: 3 sets x 10 reps @ 110 lbs
+    *   3. Incline DB Flys: 3 sets x 10 reps @ 35 lbs
+    *   4. Tricep Pushdowns: 3 sets x 10 reps @ 55 lbs
+    *   5. Lateral Raises: 3 sets x 10 reps @ 20 lbs
+*   **2026-02-04 (Wed) - PULL D**
+    *   *Notes:* Rows feeling very explosive. 
+    *   1. Romanian Deadlift: 3 sets x 8 reps @ 215 lbs
+    *   2. Lat Pulldowns: 3 sets x 10 reps @ 130 lbs
+    *   3. Seated Cable Rows: 3 sets x 10 reps @ 120 lbs
+    *   4. Face Pulls: 3 sets x 10 reps @ 45 lbs
+    *   5. Barbell Curls: 3 sets x 10 reps @ 60 lbs
+*   **2026-02-06 (Fri) - LEGS D**
+    *   *Notes:* Today's workout. Energy was high. Ready for the weekend.
+    *   1. Barbell Squats: 3 sets x 10 reps @ 185 lbs
+    *   2. Leg Press: 3 sets x 10 reps @ 260 lbs
+    *   3. Leg Curls: 3 sets x 10 reps @ 100 lbs
+    *   4. Calf Raises: 3 sets x 10 reps @ 130 lbs
+    *   5. Walking Lunges: 3 sets x 10 reps @ 40 lbs
+
+---
+
+## 7. NUTRITION LOGS (90) - LAST 30 DAYS
+
+**2026-01-01**
+*   Breakfast: Greek Yogurt with Berries (300 cal, 20g P, 30g C, 8g F)
+*   Lunch: Turkey Sandwich on Rye (450 cal, 30g P, 40g C, 12g F)
+*   Dinner: Grilled Salmon with Asparagus (550 cal, 40g P, 10g C, 25g F)
+
+**2026-01-02**
+*   Breakfast: Scrambled Eggs with Toast (350 cal, 20g P, 30g C, 18g F)
+*   Lunch: Chicken Caesar Salad (500 cal, 35g P, 15g C, 30g F)
+*   Dinner: Beef Stir-fry with Peppers (600 cal, 40g P, 45g C, 22g F)
+
+**2026-01-03**
+*   Breakfast: Protein Oatmeal (400 cal, 25g P, 50g C, 10g F)
+*   Lunch: Quinoa Bowl with Black Beans (480 cal, 18g P, 65g C, 12g F)
+*   Dinner: Baked Chicken Thighs with Carrots (520 cal, 35g P, 20g C, 28g F)
+
+**2026-01-04**
+*   Breakfast: Avocado Toast with Poached Eggs (420 cal, 18g P, 30g C, 25g F)
+*   Lunch: Tuna Poke Bowl (550 cal, 35g P, 60g C, 15g F)
+*   Dinner: Turkey Loaf with Green Beans (480 cal, 38g P, 20g C, 22g F)
+
+**2026-01-05**
+*   Breakfast: Cottage Cheese with Pineapple (250 cal, 25g P, 20g C, 4g F)
+*   Lunch: Ham and Cheese Melt (520 cal, 30g P, 40g C, 25g F)
+*   Dinner: Spaghetti Squash with Meat Sauce (450 cal, 28g P, 35g C, 18g F)
+
+**2026-01-06**
+*   Breakfast: Chia Seed Pudding (300 cal, 10g P, 35g C, 15g F)
+*   Lunch: Cobb Salad (550 cal, 40g P, 12g C, 35g F)
+*   Dinner: Grilled Shrimp with Rice (500 cal, 32g P, 55g C, 10g F)
+
+**2026-01-07**
+*   Breakfast: Protein Bar and Banana (350 cal, 22g P, 45g C, 8g F)
+*   Lunch: Roasted Vegetable Soup (320 cal, 10g P, 50g C, 8g F)
+*   Dinner: Lean Burger with Sweet Potato Fries (650 cal, 35g P, 55g C, 30g F)
+
+**2026-01-08**
+*   Breakfast: Oatmeal with Blueberries & Walnuts (350 cal, 10g P, 45g C, 12g F)
+*   Lunch: Grilled Chicken Salad with Vinaigrette (450 cal, 35g P, 12g C, 22g F)
+*   Dinner: Baked Salmon with Asparagus & Quinoa (600 cal, 40g P, 35g C, 25g F)
+
+**2026-01-09**
+*   Breakfast: Greek Yogurt Parfait with Granola (300 cal, 20g P, 30g C, 8g F)
+*   Lunch: Turkey & Avocado Wrap (500 cal, 25g P, 40g C, 18g F)
+*   Dinner: Stir-fry Tofu with Broccoli & Brown Rice (550 cal, 22g P, 60g C, 15g F)
+
+**2026-01-10**
+*   Breakfast: Scrambled Eggs (3) with Sautéed Spinach (280 cal, 21g P, 4g C, 18g F)
+*   Lunch: Quinoa Bowl with Black Beans & Roasted Veggies (480 cal, 18g P, 65g C, 12g F)
+*   Dinner: Lean Beef Burger (No Bun) with Side Salad (520 cal, 35g P, 10g C, 32g F)
+
+**2026-01-11**
+*   Breakfast: Whole Grain Toast with Almond Butter & Banana (380 cal, 12g P, 50g C, 16g F)
+*   Lunch: Tuna Salad on Bed of Greens (400 cal, 30g P, 8g C, 20g F)
+*   Dinner: Roasted Chicken Breast with Sweet Potato (580 cal, 42g P, 45g C, 14g F)
+
+**2026-01-12 (Mon - PUSH)**
+*   Breakfast: Protein Smoothie (Whey, Banana, Spinach) (320 cal, 30g P, 35g C, 5g F)
+*   Lunch: Lean Turkey Chili (450 cal, 35g P, 30g C, 12g F)
+*   Dinner: Grilled Shrimp Tacos with Cabbage Slaw (500 cal, 32g P, 45g C, 15g F)
+
+**2026-01-13**
+*   Breakfast: Cottage Cheese with Pineapple (250 cal, 25g P, 20g C, 4g F)
+*   Lunch: Cobb Salad with Grilled Chicken (550 cal, 40g P, 15g C, 35g F)
+*   Dinner: Spaghetti Squash with Marinara & Ground Turkey (480 cal, 28g P, 35g C, 18g F)
+
+**2026-01-14 (Wed - PULL)**
+*   Breakfast: Egg White Omelet with Peppers & Onions (220 cal, 24g P, 8g C, 6g F)
+*   Lunch: Lentil Soup with Whole Grain Roll (420 cal, 20g P, 60g C, 8g F)
+*   Dinner: Pan-Seared Cod with Lemon & Steamed Broccoli (400 cal, 35g P, 10g C, 12g F)
+
+**2026-01-15**
+*   Breakfast: Overnight Oats with Chia Seeds (360 cal, 12g P, 50g C, 14g F)
+*   Lunch: Chicken Caesar Wrap (520 cal, 30g P, 42g C, 22g F)
+*   Dinner: Beef & Broccoli Stir-fry over Cauliflower Rice (450 cal, 38g P, 15g C, 20g F)
+
+**2026-01-16 (Fri - LEGS)**
+*   Breakfast: Pancakes (Protein Mix) with Strawberries (400 cal, 25g P, 45g C, 10g F)
+*   Lunch: Burrito Bowl (Chicken, Beans, Guacamole) (650 cal, 40g P, 55g C, 28g F)
+*   Dinner: Baked Cod with Roasted Potatoes (500 cal, 30g P, 40g C, 15g F)
+
+**2026-01-17**
+*   Breakfast: Avocado Toast with Poached Egg (350 cal, 14g P, 28g C, 22g F)
+*   Lunch: Vegetable Minestrone with Sourdough (380 cal, 12g P, 55g C, 8g F)
+*   Dinner: Grilled Steak with Garlic Mashed Cauliflower (600 cal, 45g P, 12g C, 38g F)
+
+**2026-01-18**
+*   Breakfast: French Toast (Whole Wheat) with Maple Syrup (420 cal, 15g P, 60g C, 12g F)
+*   Lunch: Roast Beef Sandwich on Rye (500 cal, 35g P, 45g C, 18g F)
+*   Dinner: Lemon Herb Roasted Chicken with Green Beans (520 cal, 40g P, 15g C, 25g F)
+
+**2026-01-19 (Mon - PUSH)**
+*   Breakfast: Protein Pancakes with Blueberries (380 cal, 28g P, 40g C, 8g F)
+*   Lunch: Mediterranean Quinoa Salad with Chickpeas (460 cal, 16g P, 58g C, 20g F)
+*   Dinner: Baked Pork Chops with Applesauce & Zucchini (550 cal, 38g P, 25g C, 22g F)
+
+**2026-01-20**
+*   Breakfast: Scrambled Tofu with Turmeric & Kale (300 cal, 22g P, 15g C, 14g F)
+*   Lunch: Salmon Salad Sandwich on Whole Wheat (480 cal, 32g P, 40g C, 16g F)
+*   Dinner: Turkey Meatballs with Zucchini Noodles (420 cal, 35g P, 18g C, 22g F)
+
+**2026-01-21 (Wed - PULL)**
+*   Breakfast: Greek Yogurt with Honey & Sliced Almonds (320 cal, 22g P, 25g C, 12g F)
+*   Lunch: Black Bean Burgers (2) with Side Coleslaw (540 cal, 24g P, 55g C, 24g F)
+*   Dinner: Grilled Swordfish with Pineapple Salsa & Rice (580 cal, 40g P, 45g C, 18g F)
+
+**2026-01-22**
+*   Breakfast: Hard Boiled Eggs (2) and an Apple (230 cal, 13g P, 25g C, 10g F)
+*   Lunch: Shrimp & Avocado Salad (420 cal, 28g P, 12g C, 28g F)
+*   Dinner: Chicken Thighs with Roasted Root Vegetables (560 cal, 35g P, 35g C, 30g F)
+
+**2026-01-23 (Fri - LEGS)**
+*   Breakfast: Breakfast Burrito (Eggs, Sausage, Cheese) (550 cal, 28g P, 35g C, 32g F)
+*   Lunch: Chef Salad with Ham & Turkey (480 cal, 35g P, 12g C, 28g F)
+*   Dinner: Lasagna (Small Portion) with Garlic Bread (650 cal, 30g P, 65g C, 25g F)
+
+**2026-01-24**
+*   Breakfast: Bagel with Low-Fat Cream Cheese (350 cal, 12g P, 55g C, 8g F)
+*   Lunch: Chicken Noodle Soup with Crackers (320 cal, 20g P, 40g C, 6g F)
+*   Dinner: BBQ Ribs with Corn on the Cob (750 cal, 40g P, 45g C, 45g F)
+
+**2026-01-25**
+*   Breakfast: Spinach & Feta Omelet (320 cal, 22g P, 6g C, 24g F)
+*   Lunch: Falafel Wrap with Hummus (520 cal, 18g P, 65g C, 22g F)
+*   Dinner: Baked Ziti with Ground Beef (600 cal, 35g P, 60g C, 20g F)
+
+**2026-01-26 (Mon - PUSH)**
+*   Breakfast: Protein Shake with Oats & PB (450 cal, 35g P, 45g C, 18g F)
+*   Lunch: Grilled Chicken Sandwich (Whole Wheat) (500 cal, 38g P, 45g C, 12g F)
+*   Dinner: Teriyaki Chicken with Jasmine Rice (620 cal, 40g P, 75g C, 10g F)
+
+**2026-01-27**
+*   Breakfast: Chia Seed Pudding with Raspberries (280 cal, 10g P, 30g C, 15g F)
+*   Lunch: Caprese Salad with Grilled Chicken (450 cal, 35g P, 10g C, 28g F)
+*   Dinner: Shepherd's Pie (Ground Turkey & Potato) (520 cal, 32g P, 45g C, 20g F)
+
+**2026-01-28 (Wed - PULL)**
+*   Breakfast: Poached Eggs (2) on Spinach (200 cal, 14g P, 4g C, 12g F)
+*   Lunch: Turkey Club Sandwich (No Mayo) (480 cal, 35g P, 42g C, 15g F)
+*   Dinner: Grilled Trout with Lemon & Sautéed Chard (420 cal, 38g P, 8g C, 24g F)
+
+**2026-01-29**
+*   Breakfast: Muesli with Skim Milk (340 cal, 12g P, 60g C, 6g F)
+*   Lunch: Roast Beef Wrap with Horseradish (460 cal, 30g P, 38g C, 18g F)
+*   Dinner: Chicken Curry over Brown Rice (580 cal, 35g P, 65g C, 18g F)
+
+**2026-01-30 (Fri - LEGS)**
+*   Breakfast: Egg & Cheese Muffin (380 cal, 20g P, 30g C, 22g F)
+*   Lunch: Steak Salad with Blue Cheese Crumbles (550 cal, 42g P, 12g C, 35g F)
+*   Dinner: Fish Tacos (3) with Mango Salsa (540 cal, 35g P, 55g C, 12g F)
+
+**2026-01-31**
+*   Breakfast: Smooth Bowl with Hemp Seeds (400 cal, 15g P, 55g C, 15g F)
+*   Lunch: Deli Turkey on Sourdough (420 cal, 28g P, 48g C, 10g F)
+*   Dinner: Homemade Pizza (Thin Crust, Veggie) (650 cal, 25g P, 85g C, 22g F)
+
+**2026-02-01**
+*   Breakfast: Oatmeal with Sliced Strawberries (320 cal, 8g P, 55g C, 6g F)
+*   Lunch: Caesar Salad with Shrimp (480 cal, 32g P, 18g C, 30g F)
+*   Dinner: Roast Pork Tenderloin with Brussels Sprouts (500 cal, 40g P, 20g C, 25g F)
+
+**2026-02-02 (Mon - PUSH)**
+*   Breakfast: Protein Bar and a Banana (350 cal, 22g P, 45g C, 8g F)
+*   Lunch: Grilled Chicken Breast with Steamed Carrots (400 cal, 40g P, 15g C, 10g F)
+*   Dinner: Ground Beef Tacos (3) with Salsa (580 cal, 35g P, 40g C, 28g F)
+
+**2026-02-03**
+*   Breakfast: Whole Grain Cereal with Berries (300 cal, 10g P, 55g C, 4g F)
+*   Lunch: Egg Salad on Sprouts (450 cal, 18g P, 30g C, 32g F)
+*   Dinner: Chicken Parmesan (Baked) with Zoodles (520 cal, 45g P, 25g C, 18g F)
+
+**2026-02-04 (Wed - PULL)**
+*   Breakfast: Smoked Salmon on Whole Wheat Toast (340 cal, 24g P, 30g C, 14g F)
+*   Lunch: Quinoa Salad with Feta & Olives (480 cal, 14g P, 52g C, 24g F)
+*   Dinner: Grilled Lamb Chops with Mint & Asparagus (620 cal, 42g P, 10g C, 40g F)
+
+**2026-02-05**
+*   Breakfast: Greek Yogurt with Walnuts (310 cal, 20g P, 15g C, 18g F)
+*   Lunch: Ham & Cheese Melt (520 cal, 30g P, 40g C, 25g F)
+*   Dinner: Turkey Loaf with Steamed Green Beans (480 cal, 38g P, 20g C, 22g F)
+
+**2026-02-06 (Fri - LEGS)**
+*   Breakfast: Scrambled Eggs (3) with Whole Wheat Toast (420 cal, 25g P, 30g C, 22g F)
+*   Lunch: Tuna Poke Bowl with Seaweed (550 cal, 35g P, 60g C, 15g F)
+*   Dinner: Grilled Chicken Legs with Baked Potato (600 cal, 40g P, 45g C, 25g F)
+
+---
+
+## 8. DAILY METRICS (30 DAYS)
+
+**Format:** Date | Sleep (Hrs/Qual) | Mood (AM/PM) | Readiness | Productivity | Stress | Diet Qual | Win of the Day | Primary Obstacle | Linked Goal/Project | HRV | RHR
+
+1. 2026-01-08: 7.5/4 | 4/4 | 85 | 8 | 2 | 5 | "Prepped all meals for the week" | "Late meeting ran over" | G1.1 | 55 | 62
+2. 2026-01-09: 6.8/3 | 3/4 | 70 | 7 | 4 | 4 | "Finished project documentation" | "Poor sleep quality" | G2.1 | 48 | 65
+3. 2026-01-10: 8.2/5 | 5/5 | 95 | 6 | 1 | 5 | "Great long walk in the park" | "None" | G7.2 | 62 | 58
+4. 2026-01-11: 7.8/4 | 4/4 | 88 | 5 | 2 | 4 | "Planned out the entire month" | "Digital distraction" | G5.2 | 58 | 60
+5. 2026-01-12: 7.2/4 | 4/5 | 82 | 9 | 3 | 5 | "Hit a new PR on Bench Press" | "Work email volume" | P1.1.1 | 56 | 61
+6. 2026-01-13: 6.5/3 | 3/3 | 65 | 6 | 5 | 3 | "Organized my physical desktop" | "Heavy workload" | P2.1.2 | 45 | 68
+7. 2026-01-14: 7.0/4 | 4/4 | 80 | 8 | 3 | 5 | "Excellent back workout" | "Traffic congestion" | P1.1.1 | 54 | 63
+8. 2026-01-15: 7.5/4 | 4/4 | 84 | 7 | 2 | 4 | "Call with Sarah was very helpful" | "Lack of focus mid-day" | G4.1 | 57 | 62
+9. 2026-01-16: 8.0/5 | 5/5 | 92 | 9 | 2 | 5 | "Leg day went perfectly" | "None" | P1.1.1 | 60 | 59
+10. 2026-01-17: 8.5/5 | 5/4 | 90 | 4 | 1 | 4 | "Cleaned the entire garage" | "Rainy weather canceled hike" | G6.1 | 65 | 57
+11. 2026-01-18: 7.8/4 | 4/4 | 86 | 5 | 2 | 4 | "Cooked a healthy Sunday roast" | "Feeling a bit lazy" | G6.1 | 59 | 60
+12. 2026-01-19: 7.1/3 | 3/4 | 78 | 8 | 4 | 5 | "Handled a difficult client call" | "Interrupted sleep" | P2.1.1 | 52 | 64
+13. 2026-01-20: 6.9/3 | 4/3 | 75 | 7 | 4 | 4 | "Read 30 pages of my book" | "Headache in the afternoon" | G5.2 | 50 | 66
+14. 2026-01-21: 7.4/4 | 4/4 | 83 | 8 | 3 | 5 | "Deadlifts felt strong" | "Technical issues with laptop" | P1.1.1 | 55 | 62
+15. 2026-01-22: 7.6/4 | 4/5 | 87 | 9 | 2 | 5 | "Hit my savings goal for the week" | "None" | P3.1.1 | 58 | 61
+16. 2026-01-23: 7.2/4 | 4/4 | 81 | 8 | 3 | 4 | "Completed all weekly tasks" | "Sore legs" | G1.1 | 54 | 63
+17. 2026-01-24: 8.2/5 | 5/5 | 94 | 6 | 1 | 5 | "Great time with friends at dinner" | "Stayed up too late" | G4.2 | 63 | 58
+18. 2026-01-25: 8.0/4 | 4/4 | 88 | 5 | 2 | 4 | "Prepped for the work week" | "None" | G2.1 | 59 | 60
+19. 2026-01-26: 7.3/4 | 4/4 | 82 | 9 | 3 | 5 | "Bench press feels lighter" | "Busy morning" | P1.1.1 | 56 | 61
+20. 2026-01-27: 6.7/3 | 3/3 | 68 | 7 | 5 | 3 | "Caught up on all unread emails" | "Stressful meeting" | G2.1 | 47 | 67
+21. 2026-01-28: 7.1/4 | 4/4 | 80 | 8 | 3 | 5 | "Good pull session" | "None" | P1.1.1 | 54 | 63
+22. 2026-01-29: 7.5/4 | 4/4 | 85 | 7 | 2 | 4 | "Solid progress on portfolio" | "Feeling tired early" | P2.1.2 | 57 | 62
+23. 2026-01-30: 7.9/5 | 5/5 | 91 | 9 | 2 | 5 | "Strong squat session" | "Busy afternoon" | P1.1.1 | 61 | 59
+24. 2026-01-31: 8.4/5 | 5/4 | 89 | 4 | 1 | 4 | "Cleaned out the pantry" | "Social media distraction" | P6.1.1 | 64 | 57
+25. 2026-02-01: 7.7/4 | 4/4 | 86 | 5 | 2 | 4 | "Read a complete chapter" | "None" | G5.2 | 58 | 60
+26. 2026-02-02: 7.2/4 | 4/5 | 83 | 9 | 3 | 5 | "New Bench PR (155!)" | "Caffeine crash" | P1.1.1 | 56 | 61
+27. 2026-02-03: 6.6/3 | 3/3 | 66 | 7 | 5 | 3 | "Updated my budget" | "Lack of motivation" | G3.1 | 46 | 68
+28. 2026-02-04: 7.0/4 | 4/4 | 79 | 8 | 3 | 5 | "Great pull workout" | "Rainy commute" | P1.1.1 | 53 | 64
+29. 2026-02-05: 7.4/4 | 4/4 | 84 | 7 | 2 | 4 | "Planned my next hike" | "Feeling restless" | G7.2 | 57 | 62
+30. 2026-02-06: 7.8/5 | 5/5 | 92 | 9 | 2 | 5 | "Great leg day to finish week" | "None" | P1.1.1 | 62 | 58
+
+---
+
+## 9. INTERACTIONS (25 ENTRIES)
+
+1. **2026-01-10:** Call with Sarah Jenkins (Sister) | Re: Birthday planning for Mom | VIP | Family
+2. **2026-01-12:** Meeting with Elena Rodriguez (Manager) | Re: Q1 Logistics strategy | Tier 1 | Work | P2.1.1
+3. **2026-01-14:** Coffee with Mark Thompson | Re: Career advice and catch up | Tier 2 | Social
+4. **2026-01-15:** Appointment with Dr. Robert Miller | Re: Annual physical exam | Tier 1 | Professional | G1.1
+5. **2026-01-17:** Dinner with James & Linda Wilson (Parents) | Re: Family vacation dates | VIP | Family | P4.1.2
+6. **2026-01-19:** Sync with Kevin Martinez | Re: QA bug report follow-up | Tier 2 | Work
+7. **2026-01-21:** Call with David Chen (Accountant) | Re: Tax preparation documents | Tier 2 | Professional | G3.1
+8. **2026-01-22:** Lunch with Amy Scott | Re: Volunteering opportunities | Tier 2 | Social
+9. **2026-01-24:** Group Dinner (Mark, Karen, Bob) | Re: Monthly book club discussion | Tier 2 | Social | G5.2
+10. **2026-01-26:** Performance Review with Elena Rodriguez | Re: Promotion track discussion | Tier 1 | Work | G2.1
+11. **2026-01-28:** Quick chat with Thomas Baker (Neighbor) | Re: Fence repair coordination | Tier 3 | Personal
+12. **2026-01-29:** Meeting with Michael Brown (Attorney) | Re: Will and trust update | Tier 1 | Professional | G3.2
+13. **2026-01-31:** Call with Paul Jackson (Insurance) | Re: Home policy renewal | Tier 2 | Professional | G6.2
+14. **2026-02-01:** Mentorship session with Sara Star | Re: Technical leadership growth | Tier 1 | Work | G2.1
+15. **2026-02-02:** Project Kickoff with Oscar Oven | Re: Company holiday catering | Tier 2 | Work
+16. **2026-02-03:** Text thread with Alice Adams (Niece) | Re: College application advice | VIP | Family
+17. **2026-02-04:** Check-in with Daniel Moore (Contractor) | Re: Home office lighting quote | Tier 2 | Professional | P6.2.2
+18. **2026-02-05:** Networking call with Quinn Quick | Re: New startup pitch feedback | Tier 3 | Professional
+19. **2026-02-06:** Meeting with Gary Gold (Client) | Re: Monthly metals market report | Tier 1 | Work
+20. **2026-01-11:** Zoom call with Fiona Fish (Cousin) | Re: Catching up on life | Tier 3 | Family
+21. **2026-01-18:** Brief exchange with Carol King (Neighbor) | Re: Mail hold for next week | Tier 3 | Personal
+22. **2026-01-25:** Workshop with Jane Jump (Fitness) | Re: Advanced HIIT techniques | Tier 2 | Professional | G1.1
+23. **2026-02-02:** Call with Laura Long (Sister-in-law) | Re: Weekend plans | VIP | Family
+24. **2026-02-04:** Coffee with George Hall | Re: Discussion on Stoic philosophy | Tier 2 | Social | G5.2
+25. **2026-02-06:** Quick chat with Ian Iron (Warehouse) | Re: Inventory discrepancy | Tier 3 | Work
+
+---
+
+## 10. FINANCIALS (BUDGETS & TRANSACTIONS)
+
+### Budgets (Monthly Targets)
+*   **Rent/Housing:** $1,800
+*   **Groceries:** $500
+*   **Dining/Social:** $300
+*   **Health/Gym:** $150
+*   **Technology/Subscriptions:** $100
+*   **Education/Growth:** $200
+
+### Transactions (Last 30 Days)
+1. **2026-01-10:** -$125.00 | Expense | Groceries | Whole Foods Weekly Run
+2. **2026-01-12:** -$85.00 | Expense | Health/Gym | New adjustable dumbbells | **Link: P1.1.1**
+3. **2026-01-15:** +$3,200.00 | Income | Salary | TechCorp Bi-weekly Pay
+4. **2026-01-16:** -$45.50 | Expense | Dining | Coffee & Lunch with Mark
+5. **2026-01-18:** -$1,800.00 | Expense | Housing | January Rent
+6. **2026-01-20:** -$15.99 | Expense | Tech | Spotify Family Plan
+7. **2026-01-22:** -$200.00 | Expense | Education | Data Analytics Cert Deposit | **Link: P2.1.1**
+8. **2026-01-25:** -$95.00 | Expense | Groceries | Trader Joes Stock-up
+9. **2026-01-28:** -$12.00 | Expense | Tech | iCloud Storage
+10. **2026-01-30:** +$3,200.00 | Income | Salary | TechCorp Bi-weekly Pay
+11. **2026-02-01:** -$1,800.00 | Expense | Housing | February Rent
+12. **2026-02-02:** -$65.00 | Expense | Dining | Dinner with Sarah
+13. **2026-02-04:** -$42.00 | Expense | Health | Vitamin supplements
+14. **2026-02-05:** -$25.00 | Expense | Social | Book Club snack contribution
+15. **2026-02-06:** -$110.00 | Expense | Tech | Domain renewal & Hosting | **Link: P2.1.2**
+
+---
+
+## 11. TIMELINE BLOCKS (30-DAY ANCHORS)
+
+**Note:** In addition to the sample week (Feb 2-6), all 30 days include the following anchor blocks:
+*   06:00-07:15: Gym (Mon/Wed/Fri) or Morning Reflection (Tue/Thu/Sat/Sun)
+*   09:00-12:00: Deep Work Block (Weekdays)
+*   12:00-13:00: Lunch Break
+*   18:00-19:00: Evening Routine / Walk
+*   22:00-22:30: Wind-down / Reading
+
+---
+
+## 12. TASK UPDATES (PROGRESS LOGS - EXTENDED)
+
+1. **Task 1.1.1.1 Update:** "Dumbbells arrived today. Quality is excellent. Ready for Week 2." (Confidence: High)
+2. **Task 2.1.1.1 Update:** "Registered for course. Syllabus looks challenging but manageable." (Confidence: High)
+3. **Task 2.1.2.1 Update:** "Domain 'secondbrainpro.com' secured. Next: hosting setup." (Confidence: High)
+4. **Task 3.1.1.1 Update:** "Compared Ally vs. Wealthfront. Choosing Wealthfront for the higher APY." (Confidence: Medium)
+5. **Task 6.2.1.2 Update:** "Furnace tuned up. Tech says it's in great shape for another 5 years." (Confidence: High)
+6. **Task 7.2.1.1 Update:** "Boots purchased and broken in around the house. No blisters so far." (Confidence: High)
+7. **Task 1.1.2.1 Update:** "App downloaded. First 'run' session scheduled for tomorrow."
+8. **Task 4.1.1.1 Update:** "Picked up 'Pandemic' board game. Kids are excited for Friday."
+9. **Task 5.1.1.1 Update:** "7-day Duolingo streak reached. Vocabulary is building."
+10. **Task 2.2.1.1 Update:** "Sent LinkedIn invites to 3 VPs in logistics. 1 already accepted."
+11. **Task 3.2.1.1 Update:** "401k check complete. Currently at 6%, bumping to 8%."
+12. **Task 6.1.1.1 Update:** "Pantry bins ordered. Arriving Wednesday."
+13. **Task 5.2.1.1 Update:** "Finished first book of the year (Psychology of Money)."
+14. **Task 7.2.2.1 Update:** "Signed up for Wilderness First Aid at REI for April."
+15. **Task 4.2.1.1 Update:** "Dinner theme set: Mediterranean Tapas."
+
+---
+
+## 13. SYSTEM LINKS (STAKEHOLDERS & PARTICIPANTS)
+
+*   **Project 4.1.2 Stakeholders:** James Wilson (VIP), Linda Wilson (VIP), Sarah Jenkins (VIP).
+*   **Goal 2.1 Participants:** Elena Rodriguez (Manager), TechCorp HR.
+*   **Memory Links:**
+    *   Link *Note #5 (Spanish Verbs)* to *Project 5.1.1 (Duolingo)*.
+    *   Link *Note #2 (Grocery Staples)* to *Goal 1.1 (Physical Fitness)*.
+    *   Link *Interaction #7 (David Chen)* to *Goal 3.1 (Emergency Fund)*.
+
+---
+
+## 14. FLEXIBLE TRACKER (30-DAY STEP SEQUENCE)
+
+**Daily Step Counts (Jan 8 - Feb 6):**
+8500, 9200, 10100, 7800, 8900, 11200, 9500, 8200, 8800, 10500, 7600, 9100, 9900, 12000, 8400, 8700, 9300, 10200, 7900, 8600, 11000, 9400, 8300, 8900, 10600, 7700, 9200, 10000, 12500, 10400.
+
+---
+
+## 15. AI METADATA (SESSIONS & AUTOMATIONS)
+
+### Chat Sessions
+1. **Title:** "2026 Financial Planning" | Tags: #finance #strategy | Linked: G3.2
+2. **Title:** "Workout Form Review" | Tags: #fitness #push | Linked: P1.1.1
+3. **Title:** "Spanish Conversation Practice" | Tags: #learning #spanish | Linked: G5.1
+
+### Proposed Automations
+1. **Trigger:** "When bank balance > $10k" | **Action:** "Move $1k to Wealthfront Savings" | Status: PENDING
+2. **Trigger:** "Every Monday at 8am" | **Action:** "Summary of last week's nutrition macros" | Status: APPROVED
+3. **Trigger:** "When Task is Overdue" | **Action:** "Push to top of Today's Dashboard" | Status: APPROVED
+
+---
+
+## 16. RESOURCES (REFERENCE LIBRARY)
+
+1. **Title:** AllTrails: AZ Signature Series | **URL:** https://www.alltrails.com/lists/az-best | Type: Web | Tags: #hiking #recreation
+2. **Title:** SpanishDict Grammar Guide | **URL:** https://www.spanishdict.com/guide | Type: Web | Tags: #learning #spanish
+3. **Title:** Wealthfront High-Yield Savings | **URL:** https://www.wealthfront.com/cash | Type: Web | Tags: #finance #tools
+4. **Title:** Duolingo Spanish Tree | **URL:** https://www.duolingo.com/course/es/Spanish | Type: App | Tags: #learning #language
+5. **Title:** Home Depot Maintenance Schedule | **URL:** https://www.homedepot.com/c/home_maintenance_checklist | Type: PDF | Tags: #home #maintenance
+6. **Title:** Coursera: Google Data Analytics | **URL:** https://www.coursera.org/professional-certificates/google-data-analytics | Type: Course | Tags: #career #cert
+7. **Title:** Nikon School: Manual Mode Basics | **URL:** https://www.nikonschool.com/manual | Type: Video | Tags: #photography #hobby
+8. **Title:** REI Wilderness First Aid Schedule | **URL:** https://www.rei.com/events/wilderness-first-aid | Type: Web | Tags: #safety #hiking
+9. **Title:** Gmail Unsubscribe Tool Guide | **URL:** https://support.google.com/mail/answer/8151 | Type: Doc | Tags: #digital #minimalism
+10. **Title:** Calm: 10-Minute Mindfulness | **URL:** https://www.calm.com/meditation | Type: App | Tags: #wellness #mentalhealth
+
+
+
+

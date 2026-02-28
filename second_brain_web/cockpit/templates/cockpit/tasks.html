@@ -1,0 +1,120 @@
+{% extends 'cockpit/base.html' %}
+
+{% block title %}Projects | Second Brain{% endblock %}
+
+{% block content %}
+<div class="flex h-full" id="main-app-layout">
+
+    <nav class="w-80 border-r border-gray-200 bg-gray-50 flex-shrink-0 flex flex-col overflow-hidden" aria-label="Project Hierarchy">
+        
+        <div class="p-4 border-b border-gray-200 bg-gray-50 flex-shrink-0">
+             <div class="flex space-x-2" role="toolbar" aria-label="System Tools">
+                 <button onclick="playSystemSound('success'); window.location.href='/projects'" 
+                    id="btn-global-tasks"
+                    accesskey="t"
+                    class="flex-1 flex items-center justify-center px-3 py-2 bg-white border border-gray-300 rounded-md text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                    aria-label="Global Tasks">
+                    <span class="mr-2" aria-hidden="true">🌍</span> Global Tasks
+                 </button>
+
+                 <button id="btn-create-new"
+                         accesskey="n"
+                         onclick="playSystemSound('success')"
+                         hx-get="/api/render_create_modal/?active_project_id={{ active_project.id|default:'' }}" 
+                         hx-target="#modal-container" 
+                         class="flex-1 flex items-center justify-center px-3 py-2 bg-blue-600 border border-blue-700 rounded-md text-sm font-bold text-white hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                         aria-label="Create New">
+                    <span class="mr-2" aria-hidden="true">➕</span> New
+                 </button>
+
+                 <button id="btn-chat"
+                    accesskey="c"
+                    hx-get="/api/render_chat_panel/"
+                    hx-target="#chat-drawer-content"
+                    hx-swap="innerHTML"
+                    onclick="playSystemSound('success'); toggleChatDrawer(true);" 
+                    class="flex-none flex items-center justify-center px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-sm"
+                    aria-label="Agent Chat (Opens Drawer)">
+                    <span aria-hidden="true">🤖</span>
+                 </button>
+             </div>
+        </div>
+
+        <div class="p-4 border-b border-gray-200 bg-white flex-shrink-0">
+             <h1 id="sidebar-heading" class="text-xs font-bold text-gray-500 uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1" tabindex="-1">
+                Areas & Goals
+             </h1>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto p-2" id="sidebar-container">
+            <div id="sidebar-list" class="space-y-3">
+                {% include 'cockpit/partials/sidebar_list.html' %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex-1 flex flex-col min-w-0 bg-white">
+        
+        <div class="p-6 border-b border-gray-200 bg-white">
+            <h2 id="main-heading" class="text-2xl font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1" tabindex="-1">
+                {% if active_goal %}
+                    {{ active_goal.title }}
+                {% elif active_standalone_project %}
+                    {{ active_standalone_project.title }}
+                {% endif %}
+            </h2>
+        </div>
+
+        <div id="task-list-container" class="flex-1 overflow-y-auto p-6 bg-gray-50">
+            {% if active_goal %}
+                {% include 'cockpit/partials/goal_overview.html' with goal=active_goal projects=projects current_status=current_status %}
+            {% elif active_standalone_project %}
+                {% include 'cockpit/partials/project_overview.html' with project=active_standalone_project target_container="#task-list-container" view_context="project" %}
+            {% else %}
+                {% include 'cockpit/partials/task_list.html' %}
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        setTimeout(() => {
+            const goalHeader = document.getElementById('goal-overview-heading');
+            if (goalHeader) { goalHeader.focus(); return; }
+            
+            const projectHeader = document.getElementById('project-overview-heading');
+            if (projectHeader) { projectHeader.focus(); return; }
+
+            const heading = document.getElementById('sidebar-heading');
+            if (heading) heading.focus();
+        }, 200);
+
+        document.body.addEventListener('keydown', function(e) {
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+
+            if (e.altKey) {
+                const key = e.key.toLowerCase();
+                if (key === 't') {
+                    e.preventDefault();
+                    document.getElementById('btn-global-tasks').click();
+                } else if (key === 'n') {
+                    e.preventDefault();
+                    // Manually track focus to avoid capturing the button click
+                    window.lastFocusTarget = document.activeElement;
+                    window.suppressFocusTracking = true;
+                    document.getElementById('btn-create-new').click();
+                    setTimeout(() => window.suppressFocusTracking = false, 100);
+                } else if (key === 'c') {
+                    e.preventDefault();
+                    const btn = document.getElementById('btn-chat');
+                    if (btn) btn.click();
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

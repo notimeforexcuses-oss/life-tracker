@@ -1,0 +1,125 @@
+{% load custom_filters %}
+
+<!-- Summary Section (Last 7 Days) -->
+<div class="mb-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+        <div class="text-[10px] font-bold text-gray-400 uppercase mb-1">Avg Readiness</div>
+        <div class="flex items-end gap-1">
+            <span class="text-2xl font-black text-indigo-600">{{ averages.readiness }}%</span>
+            <span class="text-[10px] text-green-500 font-bold mb-1">Stable</span>
+        </div>
+    </div>
+    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+        <div class="text-[10px] font-bold text-gray-400 uppercase mb-1">Avg Deep Sleep</div>
+        <div class="flex items-end gap-1">
+            <span class="text-2xl font-black text-blue-600">{{ averages.deep_min|to_hours }}</span>
+            <span class="text-[10px] text-gray-400 font-bold mb-1">Target 1.5h</span>
+        </div>
+    </div>
+    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+        <div class="text-[10px] font-bold text-gray-400 uppercase mb-1">Avg REM</div>
+        <div class="flex items-end gap-1">
+            <span class="text-2xl font-black text-purple-600">{{ averages.rem_min|to_hours }}</span>
+            <span class="text-[10px] text-gray-400 font-bold mb-1">Target 2h</span>
+        </div>
+    </div>
+    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+        <div class="text-[10px] font-bold text-gray-400 uppercase mb-1">Avg Resting HR</div>
+        <div class="flex items-end gap-1">
+            <span class="text-2xl font-black text-red-600">{{ averages.rhr|default:"--" }}</span>
+            <span class="text-[10px] text-gray-400 font-bold mb-1">BPM</span>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for metric in metrics %}
+    <button class="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg transition-all cursor-pointer overflow-hidden group flex flex-col focus:ring-2 focus:ring-indigo-500 outline-none w-full"
+         hx-get="{% url 'render_health_modal' %}?type=sleep&id={{ metric.id }}"
+         hx-target="#modal-container">
+        
+        <!-- Card Header -->
+        <div class="px-5 py-4 border-b border-gray-50 flex justify-between items-center w-full
+                    {% with score=metric.readiness_score|default:0 %}
+                    {% if score >= 85 %}bg-green-50/50{% elif score >= 70 %}bg-blue-50/50{% elif score >= 50 %}bg-orange-50/50{% else %}bg-red-50/50{% endif %}
+                    {% endwith %}">
+            <div>
+                <h3 class="font-black text-gray-800">{{ metric.date|format_health_date }}</h3>
+                <div class="flex gap-2 mt-0.5">
+                    {% if metric.hrv %}
+                    <span class="text-[9px] font-bold px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded-md">HRV {{ metric.hrv }}ms</span>
+                    {% endif %}
+                    {% if metric.resting_hr %}
+                    <span class="text-[9px] font-bold px-1.5 py-0.5 bg-red-100 text-red-700 rounded-md">RHR {{ metric.resting_hr }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="text-right">
+                <div class="text-[10px] font-bold text-gray-400 uppercase">Readiness</div>
+                <div class="text-xl font-black {% with score=metric.readiness_score|default:0 %}{% if score >= 85 %}text-green-600{% elif score >= 70 %}text-blue-600{% elif score >= 50 %}text-orange-600{% else %}text-red-600{% endif %}{% endwith %}">
+                    {{ metric.readiness_score }}%
+                </div>
+            </div>
+        </div>
+
+        <div class="p-5 flex-1 flex flex-col">
+            <!-- Main Hours -->
+            <div class="flex items-end gap-2 mb-6">
+                <span class="text-5xl font-black text-gray-900 leading-none">{{ metric.sleep_hours }}</span>
+                <span class="text-sm font-bold text-gray-400 pb-1 uppercase tracking-widest">Hours</span>
+            </div>
+
+            <!-- Phase Bar -->
+            {% if metric.sleep_deep_min %}
+            <div class="mb-6">
+                <div class="flex justify-between text-[10px] font-bold text-gray-400 uppercase mb-2">
+                    <span>Sleep Phases</span>
+                    <span>Total {{ metric.sleep_hours }}h</span>
+                </div>
+                <div class="w-full h-3 rounded-full overflow-hidden flex bg-gray-100">
+                    <div class="bg-indigo-600 h-full" style="width: {{ metric.sleep_deep_min|percentage:480 }}%" title="Deep"></div>
+                    <div class="bg-purple-500 h-full" style="width: {{ metric.sleep_rem_min|percentage:480 }}%" title="REM"></div>
+                    <div class="bg-blue-400 h-full" style="width: {{ metric.sleep_light_min|percentage:480 }}%" title="Light"></div>
+                    <div class="bg-orange-300 h-full" style="width: {{ metric.sleep_awake_min|percentage:480 }}%" title="Awake"></div>
+                </div>
+                <div class="flex gap-3 mt-2">
+                    <div class="flex items-center gap-1 text-[9px] font-bold text-gray-500">
+                        <div class="w-2 h-2 rounded-full bg-indigo-600"></div> Deep
+                    </div>
+                    <div class="flex items-center gap-1 text-[9px] font-bold text-gray-500">
+                        <div class="w-2 h-2 rounded-full bg-purple-500"></div> REM
+                    </div>
+                    <div class="flex items-center gap-1 text-[9px] font-bold text-gray-500">
+                        <div class="w-2 h-2 rounded-full bg-blue-400"></div> Light
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <!-- Legacy Quality Bars -->
+            <div class="space-y-4 mb-6">
+                <div>
+                    <div class="flex justify-between text-[10px] font-bold text-gray-400 uppercase mb-1">
+                        <span>Quality</span>
+                        <span>{{ metric.sleep_quality }}/5</span>
+                    </div>
+                    <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-indigo-400 h-full" style="width: {{ metric.sleep_quality|multiply:20 }}%"></div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Footer Action -->
+            <div class="mt-auto pt-4 flex justify-between items-center text-gray-300 group-hover:text-indigo-500 transition-colors border-t border-gray-50">
+                <span class="text-[10px] font-bold uppercase tracking-tighter">View Details</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </div>
+        </div>
+    </button>
+    {% empty %}
+    <div class="col-span-full text-center py-20 bg-white border border-dashed border-gray-300 rounded-2xl">
+        <div class="text-4xl mb-4">🌙</div>
+        <div class="text-gray-500 font-medium">No sleep data recorded yet. Rest is productivity!</div>
+    </div>
+    {% endfor %}
+</div>

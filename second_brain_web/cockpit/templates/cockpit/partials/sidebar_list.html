@@ -1,0 +1,78 @@
+            {% for area in areas %}
+                <details class="group" {% if active_goal and active_goal.area_id == area.id %}open{% endif %}>
+                    <summary class="flex items-center w-full p-2 rounded-lg text-sm font-bold text-gray-700 hover:bg-gray-200 cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <svg class="w-4 h-4 mr-2 text-gray-400 transform transition-transform group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                        {{ area.name }}
+                    </summary>
+                    
+                    <div class="pl-4 space-y-1 mt-1 border-l-2 border-gray-200 ml-3">
+                        {% if not area.goals.all %}
+                            <button hx-post="{% url 'delete_area' area.id %}"
+                                    hx-swap="none"
+                                    class="w-full text-left p-2 rounded-md text-xs font-bold text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors flex items-center gap-2">
+                                <span>🗑</span> Delete Empty Area
+                            </button>
+                        {% endif %}
+                        {% for goal in area.goals.all %}
+                            {% if active_goal.id == goal.id %}
+                                <button onclick="playSystemSound('success'); window.location.href='/projects?goal={{ goal.id }}'" 
+                                   class="nav-btn block w-full text-left p-2 rounded-md text-sm font-bold bg-blue-100 text-blue-900 shadow-sm"
+                                   aria-current="page">
+                                   {{ goal.title }}
+                                </button>
+                            {% else %}
+                                <button onclick="playSystemSound('success'); window.location.href='/projects?goal={{ goal.id }}'" 
+                                   class="nav-btn block w-full text-left p-2 rounded-md text-sm text-gray-600 hover:bg-white hover:text-blue-600 transition-colors">
+                                   {{ goal.title }}
+                                </button>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </details>
+            {% endfor %}
+
+            {% if uncategorized_goals %}
+                <div class="pt-2">
+                    <h2 class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Unassigned Goals</h2>
+                    <div class="space-y-1">
+                    {% for goal in uncategorized_goals %}
+                        {% if active_goal.id == goal.id %}
+                            <button onclick="playSystemSound('success'); window.location.href='/projects?goal={{ goal.id }}'" 
+                               class="nav-btn block w-full text-left p-2 rounded-md text-sm font-bold bg-blue-100 text-blue-900 shadow-sm"
+                               aria-current="page">
+                               {{ goal.title }}
+                            </button>
+                        {% else %}
+                            <button onclick="playSystemSound('success'); window.location.href='/projects?goal={{ goal.id }}'" 
+                               class="nav-btn block w-full text-left p-2 rounded-md text-sm text-gray-600 hover:bg-white hover:text-blue-600 transition-colors">
+                               {{ goal.title }}
+                            </button>
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if standalone_projects %}
+                <div class="pt-2">
+                    <h2 class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Standalone Projects</h2>
+                    <div class="space-y-1">
+                    {% for proj in standalone_projects %}
+                        {% if active_standalone_project.id == proj.id %}
+                            <button onclick="playSystemSound('success'); window.location.href='/projects'" 
+                               class="nav-btn block w-full text-left p-2 rounded-md text-sm font-bold bg-purple-100 text-purple-900 shadow-sm"
+                               aria-current="page">
+                               📂 {{ proj.title }}
+                            </button>
+                        {% else %}
+                            <button onclick="playSystemSound('success'); window.location.href='/projects?project={{ proj.id }}'" 
+                               class="nav-btn block w-full text-left p-2 rounded-md text-sm text-gray-600 hover:bg-gray-200 hover:text-purple-600 transition-colors">
+                               📂 {{ proj.title }}
+                            </button>
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+                </div>
+            {% endif %}

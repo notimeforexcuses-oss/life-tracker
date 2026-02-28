@@ -1,0 +1,25 @@
+<div class="space-y-3">
+    {% for notif in notifications %}
+    <div class="p-3 rounded-lg border {% if notif.severity == 'Critical' %}bg-red-50 border-red-200{% elif notif.severity == 'Warning' %}bg-yellow-50 border-yellow-200{% else %}bg-blue-50 border-blue-200{% endif %} flex justify-between items-start animate-fade-in">
+        <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider {% if notif.severity == 'Critical' %}text-red-700{% elif notif.severity == 'Warning' %}text-yellow-700{% else %}text-blue-700{% endif %}">
+                {{ notif.type }}
+            </span>
+            <p class="text-sm text-gray-800 mt-1">{{ notif.content }}</p>
+            <p class="text-[10px] text-gray-400 mt-1">{{ notif.created_at }}</p>
+        </div>
+        <button hx-post="/api/notifications/{{ notif.id }}/read/" 
+                hx-target="closest div" 
+                hx-swap="outerHTML"
+                class="text-gray-400 hover:text-gray-600 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+    {% empty %}
+    <div class="text-center py-4">
+        <p class="text-gray-400 text-xs italic">No new insights from the Brain.</p>
+    </div>
+    {% endfor %}
+</div>

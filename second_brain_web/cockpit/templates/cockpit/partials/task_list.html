@@ -1,0 +1,55 @@
+<div id="task-list" class="space-y-4"
+     hx-get="/api/render_global_view"
+     hx-trigger="tasks-changed from:body"
+     hx-include="#global-task-filter, #global-task-sort"
+     hx-target="#task-list-container"
+     hx-swap="innerHTML">
+     
+    <div class="flex justify-between items-end pb-2 border-b border-gray-200">
+        <h2 id="main-heading" class="text-2xl font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1" tabindex="-1">
+            Global Task Queue
+        </h2>
+        
+        <div class="flex space-x-2">
+            <select name="status" 
+                    id="global-task-filter"
+                    class="text-xs font-bold text-gray-600 bg-gray-100 border border-gray-200 rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 outline-none"
+                    hx-get="/api/render_global_view"
+                    hx-target="#task-list-container"
+                    hx-include="#global-task-sort"
+                    hx-swap="innerHTML"
+                    hx-trigger="change">
+                <option value="PENDING" {% if current_status == 'PENDING' %}selected{% endif %}>Active</option>
+                <option value="COMPLETED" {% if current_status == 'COMPLETED' %}selected{% endif %}>Completed</option>
+                <option value="ALL" {% if current_status == 'ALL' %}selected{% endif %}>All</option>
+            </select>
+
+            <select name="sort" 
+                    id="global-task-sort"
+                    class="text-xs font-bold text-gray-600 bg-gray-100 border border-gray-200 rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 outline-none"
+                    hx-get="/api/render_global_view"
+                    hx-target="#task-list-container"
+                    hx-include="#global-task-filter"
+                    hx-swap="innerHTML"
+                    hx-trigger="change">
+                <option value="due_date" {% if current_sort == 'due_date' %}selected{% endif %}>Date</option>
+                <option value="priority" {% if current_sort == 'priority' %}selected{% endif %}>Priority</option>
+                <option value="alpha" {% if current_sort == 'alpha' %}selected{% endif %}>A-Z</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="space-y-2">
+        {% for task in tasks %}
+            {% include 'cockpit/partials/task_item.html' with task=task view_context="global" target_container="#task-list-container" return_focus="main-heading" %}
+        {% empty %}
+            <div class="text-center py-20">
+                <div class="inline-block p-4 rounded-full bg-gray-50 mb-3">
+                    <span class="text-4xl grayscale opacity-50">🎉</span>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900">All Clear</h3>
+                <p class="text-gray-500 text-sm mt-1">No tasks found for this filter.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>

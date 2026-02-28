@@ -1,0 +1,323 @@
+<div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center p-4" 
+     id="create-modal" role="dialog" aria-modal="true"
+     x-data="{ 
+        currentView: 'main', 
+        selectedContacts: [], 
+        searchQuery: '',
+        lastTriggerId: null,
+        toggleContact(id) {
+            if (this.selectedContacts.includes(id)) {
+                this.selectedContacts = this.selectedContacts.filter(c => c !== id);
+            } else {
+                this.selectedContacts.push(id);
+            }
+        },
+        handleHeaderClose() {
+            if (this.currentView === 'picker') {
+                this.closePicker();
+            } else {
+                closeAndRestoreFocus();
+            }
+        },
+        openPicker(triggerId) {
+            this.lastTriggerId = triggerId;
+            this.currentView = 'picker';
+        },
+        closePicker() {
+            this.currentView = 'main';
+            if (this.lastTriggerId) {
+                setTimeout(() => {
+                    const el = document.getElementById(this.lastTriggerId);
+                    if (el) el.focus();
+                }, 50);
+            }
+        }
+     }">
+    
+    <div class="bg-white w-full max-w-lg rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        
+        <!-- Header -->
+        <div class="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+            <h2 class="text-xl font-bold text-gray-800" id="modal-header-focus-target" tabindex="-1">
+                <span x-show="currentView === 'main'">Create New Item</span>
+                <span x-show="currentView === 'picker'">Select Contacts</span>
+            </h2>
+            <button @click="handleHeaderClose()" class="text-gray-400 hover:text-gray-800 text-2xl" aria-label="Close">
+                &times;
+            </button>
+        </div>
+
+        <form hx-post="{% url 'process_create_item' %}" 
+              hx-swap="none" 
+              hx-on::after-request="closeAndRestoreFocus()"
+              class="flex-1 overflow-y-auto flex flex-col">
+            
+            <!-- Hidden input for selected contacts -->
+            <template x-for="id in selectedContacts">
+                <input type="hidden" name="assignee_ids" :value="id">
+            </template>
+
+            <!-- MAIN VIEW -->
+            <div x-show="currentView === 'main'" class="p-6 space-y-6 flex-1 overflow-y-auto">
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">I want to create a...</label>
+                    <select id="type-selector" name="item_type" onchange="toggleFields()" class="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 font-bold text-gray-800">
+                        <option value="task" selected>Task</option>
+                        <option value="project">Project</option>
+                        <option value="goal">Goal</option>
+                        <option value="area">Area</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Title</label>
+                    <input type="text" name="title" required placeholder="Name this item..." 
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-medium"
+                           autocomplete="off">
+                </div>
+
+                <!-- TASK FIELDS -->
+                <div id="extras-task" class="hidden space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Assign to Project</label>
+                        <select name="linked_project_id" class="w-full p-3 border border-gray-300 rounded-lg bg-white">
+                            <option value="">-- No Project --</option>
+                            {% for p in projects %}
+                            <option value="{{ p.id }}" {% if active_project_id == p.id %}selected{% endif %}>{{ p.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Assignee Section -->
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Assignees</label>
+                            <button type="button" id="btn-link-contacts-task" @click="openPicker('btn-link-contacts-task')" class="text-xs font-bold text-blue-600 hover:text-blue-800">
+                                + Link Contacts
+                            </button>
+                        </div>
+                        <ul class="flex flex-wrap gap-2 list-none p-0 m-0" x-show="selectedContacts.length > 0">
+                            <template x-for="id in selectedContacts">
+                                <li class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-bold border border-blue-200">
+                                    <span x-text="document.getElementById('contact-name-' + id).innerText"></span>
+                                </li>
+                            </template>
+                        </ul>
+                        <p x-show="selectedContacts.length === 0" class="text-sm text-gray-400 italic">No contacts linked.</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Due Date</label>
+                            <input type="date" name="due_date" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Priority</label>
+                            <select name="priority" class="w-full p-3 border border-gray-300 rounded-lg bg-white">
+                                <option value="Low">Low</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROJECT FIELDS -->
+                <div id="extras-project" class="hidden space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Align with Goal</label>
+                        <select name="linked_goal_id" class="w-full p-3 border border-gray-300 rounded-lg bg-white">
+                            <option value="">-- No Goal --</option>
+                            {% for g in goals %}
+                            <option value="{{ g.id }}" {% if active_project and active_project.goal_id == g.id %}selected{% endif %}>{{ g.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Stakeholder Section -->
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Stakeholders</label>
+                            <button type="button" id="btn-link-contacts-project" @click="openPicker('btn-link-contacts-project')" class="text-xs font-bold text-blue-600 hover:text-blue-800">
+                                + Link Contacts
+                            </button>
+                        </div>
+                        <ul class="flex flex-wrap gap-2 list-none p-0 m-0" x-show="selectedContacts.length > 0">
+                            <template x-for="id in selectedContacts">
+                                <li class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full font-bold border border-purple-200">
+                                    <span x-text="document.getElementById('contact-name-' + id).innerText"></span>
+                                </li>
+                            </template>
+                        </ul>
+                        <p x-show="selectedContacts.length === 0" class="text-sm text-gray-400 italic">No stakeholders linked.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Description</label>
+                        <textarea name="description" rows="3" placeholder="What is the scope of this project?" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Priority</label>
+                        <select name="project_priority" class="w-full p-3 border border-gray-300 rounded-lg bg-white">
+                            <option value="Low">Low</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- GOAL FIELDS -->
+                <div id="extras-goal" class="hidden space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Assign to Area</label>
+                        <select name="area_id" class="w-full p-3 border border-gray-300 rounded-lg bg-white mb-2">
+                            <option value="">-- No Area --</option>
+                            {% for a in areas %}
+                            <option value="{{ a.id }}">{{ a.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="new_area_name" placeholder="Or create new Area..." 
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50"
+                               autocomplete="off">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Motivation (The Why)</label>
+                        <textarea name="motivation" rows="2" placeholder="Why is this goal important?" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Target Date</label>
+                        <input type="date" name="target_date" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <!-- AREA FIELDS -->
+                <div id="extras-area" class="hidden space-y-4">
+                    <p class="text-sm text-gray-500 italic">
+                        Areas are high-level domains of your life (e.g., Health, Finance, Career) that have no end date.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- CONTACT PICKER VIEW -->
+            <div x-show="currentView === 'picker'" class="flex-1 flex flex-col min-h-0 bg-gray-50" style="display: none;"
+                 @keydown.tab="handlePickerTab($event)">
+                <div class="p-4 border-b border-gray-200 bg-white sticky top-0 z-10">
+                    <input type="text" x-model="searchQuery" placeholder="Search contacts..." 
+                           class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                
+                <div class="flex-1 overflow-y-auto p-2 space-y-1">
+                    {% for c in all_contacts %}
+                    <label class="flex items-center p-3 bg-white border border-gray-200 rounded hover:bg-blue-50 cursor-pointer transition-colors"
+                           x-show="'{{ c.name|lower }}'.includes(searchQuery.toLowerCase())">
+                        <input type="checkbox" :checked="selectedContacts.includes({{ c.id }})" @change="toggleContact({{ c.id }})"
+                               class="h-5 w-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300">
+                        <span class="ml-3 font-medium text-gray-700" id="contact-name-{{ c.id }}">{{ c.name }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+                
+                <div class="p-4 border-t border-gray-200 bg-white flex justify-end">
+                    <button type="button" @click="closePicker()" 
+                            class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 shadow-sm">
+                        Done
+                    </button>
+                </div>
+            </div>
+
+            <!-- FOOTER (Only on Main View) -->
+            <div x-show="currentView === 'main'" class="p-4 border-t border-gray-200 bg-gray-50 flex justify-end space-x-3">
+                <button type="button" onclick="closeAndRestoreFocus()" class="px-4 py-2 text-gray-600 font-medium hover:bg-gray-200 rounded-lg">
+                    Cancel
+                </button>
+                <button type="submit" onclick="persistToast('Item created successfully')" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 shadow-sm">
+                    Create Item
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    window.toggleFields = function() {
+        const selector = document.getElementById('type-selector');
+        if (!selector) return;
+        
+        const type = selector.value;
+        const sections = {
+            'task': document.getElementById('extras-task'),
+            'project': document.getElementById('extras-project'),
+            'goal': document.getElementById('extras-goal'),
+            'area': document.getElementById('extras-area')
+        };
+
+        // Hide all
+        Object.values(sections).forEach(el => {
+            if (el) el.classList.add('hidden');
+        });
+
+        // Show selected
+        const target = sections[type];
+        if (target) target.classList.remove('hidden');
+    };
+
+    window.closeAndRestoreFocus = function() {
+        handleModalClose('create-modal');
+        setTimeout(() => {
+            if (window.lastFocusTarget && document.body.contains(window.lastFocusTarget)) {
+                window.lastFocusTarget.focus();
+                return;
+            }
+            const headings = ['project-overview-heading', 'goal-overview-heading', 'sidebar-heading'];
+            for (const id of headings) {
+                const el = document.getElementById(id);
+                if (el && document.body.contains(el)) {
+                    el.focus();
+                    break;
+                }
+            }
+        }, 100);
+    };
+
+    window.handlePickerTab = function(e) {
+        const picker = document.querySelector('[x-show="currentView === \'picker\'"]');
+        if (!picker || picker.style.display === 'none') return;
+
+        // Select focusable elements
+        const focusableElements = picker.querySelectorAll(
+            'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select'
+        );
+        
+        // Filter out hidden ones (just in case)
+        const focusable = Array.from(focusableElements).filter(el => el.offsetParent !== null);
+
+        if (focusable.length === 0) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey) {
+            if (document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            }
+        } else {
+            if (document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
+    };
+
+    setTimeout(() => {
+        const header = document.getElementById('modal-header-focus-target');
+        if (header) header.focus();
+        window.toggleFields(); 
+    }, 150);
+</script>

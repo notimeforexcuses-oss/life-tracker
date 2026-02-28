@@ -1,0 +1,172 @@
+# 📐 The Second Brain Interface: Master Specification (v3.0)
+
+## Part 1: The Interface (UX & Accessibility)
+
+### 1. 📊 Dashboard (`/`)
+
+* **Concept:** Executive Summary / "Heads Up Display".
+* **Layout Logic:**
+* **Header:** Date, Location, and System Status (e.g., "All systems nominal").
+* **Focus Block:** Large text display of latest `focus_level` and `energy_level` from the database.
+* **Critical Path:** Displays **up to 5** tasks (High Priority or Overdue). If fewer exist, the list shrinks nicely. If 0, it shows an "All Clear" message.
+* **Financial Pulse:** A simple progress bar showing "Budget Used" vs. "Days Passed" in the month.
+
+
+* **Interactivity:**
+* **Completion:** Checkboxes allow marking tasks complete directly from the Dashboard (using HTMX to fade them out).
+* **Quick Notes:** Clicking a task title opens the **Dossier Modal** to append progress notes without leaving the page.
+
+
+
+### 2. 🏗️ Projects (`/projects`)
+
+* **Concept:** Hierarchical Project Management with Area-First organization.
+* **Navigation (Sidebar):**
+    * **System Toolbar:** A dedicated button row at the top for high-frequency actions.
+        * **Global Tasks (`Alt+T`):** Resets view to show all tasks.
+        * **New Item (`Alt+N`):** Opens the Universal Create Modal.
+        * **Assistant (`Alt+K`):** Toggles the AI Chat drawer.
+    * **The Tree:**
+        * **Level 1 (Areas):** Collapsible `<details>` blocks (e.g., "Health", "Finance").
+        * **Level 2 (Goals):** Clickable items inside Areas. Active state highlighted in Blue.
+        * **Standalone:** Separate section for Projects/Goals not assigned to an Area.
+
+* **Main View (The Stage):** 
+    * **Dynamic Header:** A persistent `<h2>` that updates with the context title (Goal or Project name).
+    * **Context Views:**
+        * **Goal Overview:** Shows Motivation, Target Date, and a list of linked Projects.
+        * **Project Overview:** Shows Description, Progress Bar (visual % complete), and Task List.
+    * **HTMX Transitions:** Content swaps occur within the main container `#task-list-container` without full page reloads.
+
+* **Accessibility & Focus Management:**
+    * **Screen Refresh Strategy:** 
+        * We use `htmx:afterSettle` events to manually manage focus.
+        * **Context Change:** When a new View loads (e.g., clicking a Goal), focus is immediately sent to the **Section Heading** (`tabindex="-1"`). This ensures Screen Readers announce the new context immediately (e.g., "Goal Overview: Lose 10 lbs").
+    * **Shortcuts:**
+        * `Alt+T/N/K` for rapid navigation.
+    * **Sound:** Distinct system sounds play on navigation and modal interactions.
+
+* **Look and Feel:**
+    * **Visual Hierarchy:** 
+        * **Goals:** Blue theme / Rounded badges.
+        * **Projects:** Purple theme / Folder iconography.
+    * **Progress:** Projects feature an animated gradient progress bar.
+
+
+
+### 3. 👥 CRM (`/contacts`)
+
+* **Concept:** Relationship Management.
+* **Accessibility:**
+* **Letter Headings:** The contact list is segmented by letter headers (`<h2>A</h2>`, `<h2>B</h2>`...), allowing you to jump alphabetically using the `H` key. ( *Note: Visual "Jump Links" removed per your request.*)
+
+
+* **Content:**
+* **Filter Bar:** Options to view "All", "Family", "Network", or "Need Outreach".
+* **The Card:** Shows Name, Relationship, and Last Contact Date.
+
+
+* **Interactivity:**
+* Clicking a contact opens the **Profile View**.
+* **Profile:** Displays contact details and a timeline of past interactions (calls/emails).
+* **"Log Interaction" Button:** Opens a form to quickly record a meeting or call.
+
+
+
+### 4. 🧠 Memories (`/memories`)
+
+* **Concept:** A Unified Knowledge Stream.
+* **Data Source:** This feed combines data from **two** database tables:
+* `journal_entries`: Displayed with Timestamp and Mood.
+* `notes`: Displayed with Title and Tags.
+
+
+* **Layout:**
+* **Search First:** The page is dominated by a large Search Bar at the top.
+* **The Feed:** A single reverse-chronological list of items (Newest First).
+
+
+* **Interactivity:**
+* **Quick Capture:** A text area at the top.
+* **Mode Toggle:** A switch to define the entry as a "Note" (Title/Content) or "Journal" (Mood/Content).
+* **Semantic Search:** The search bar uses the Agent's vector capabilities to find concepts across both Journals and Notes.
+
+
+
+### 5. 🤖 Chat (`/chat`)
+
+* **Concept:** Conversational Intelligence.
+* **Layout:**
+* **Sidebar (History):** A chronological list of past sessions (Load/Archive/Delete).
+* **Feed:** The active conversation.
+* **Connection Panel:** A collapsible details pane showing which Goal, Project, or Contact this chat is linked to.
+
+
+* **Accessibility:**
+* **Headings:** Every message is preceded by `<h3>User</h3>` or `<h3>Second Brain</h3>` for navigation.
+* **Audio Feedback:** A specific sound plays when the Agent's full response is ready.
+
+
+* **Data Storage:** Chat history is stored in the `brain.db` database for instant retrieval.
+
+---
+
+## Part 2: The Data Strategy
+
+We will update the database to support the new Chat features and ensure links exist across the system.
+
+**1. Table: `chat_sessions**`
+
+* `id`: Unique Identifier.
+* `title`: Auto-generated summary (e.g., "Budget Planning").
+* `created_at`: Timestamp.
+* `is_archived`: Boolean (to hide from sidebar without deleting).
+* `tags`: Text field for flexible grouping.
+* **The Connection Pack:**
+* `linked_goal_id`: Links chat to a Goal.
+* `linked_project_id`: Links chat to a Project.
+* `linked_contact_id`: Links chat to a Person.
+
+
+
+**2. Table: `chat_messages**`
+
+* `id`: Unique Identifier.
+* `session_id`: Link to the parent session.
+* `role`: 'user' or 'assistant'.
+* `content`: The actual text of the message.
+* `tool_usage`: JSON field to store technical tool outputs (hidden by default in UI).
+
+---
+
+## Part 3: The Execution Phase (Rollout)
+
+We will build this in 5 distinct steps.
+
+**Sprint 1: Infrastructure & The "Brain Stem"**
+
+1. **Database Update:** Run a script to create the `chat_sessions` and `chat_messages` tables and verify the `tasks` columns match the schema.
+2. **Sound Engine:** Update `base.html` to include the JavaScript audio cue system.
+3. **Navigation:** Update the Sidebar HTML to reflect the final 5 tabs (Projects, CRM, Memories, etc.).
+
+**Sprint 2: The Chat System (The "Brain")**
+
+1. **Backend Tools:** Update `brain_agent.py` and create `tools_chat.py` to handle creating sessions, saving messages, and retrieving history from the DB.
+2. **Frontend:** Update `chat.html` to include the History Sidebar and Connection Panel.
+3. **Logic:** Connect the Chat View to the new database tables so history loads instantly.
+
+**Sprint 3: The Projects System (The "Hands")**
+
+1. **Backend Tools:** Update `tools_projects.py` to support the "Goal Tree" hierarchy generation.
+2. **Frontend:** Rename "Workspace" to "Projects" and implement the Goal Tree sidebar in `tasks.html`.
+3. **Logic:** Finalize the "Dossier Modal" logic for editing dates and notes.
+
+**Sprint 4: The CRM (The "Heart")**
+
+1. **Backend Tools:** Update `tools_crm.py` to support "By Letter" sorting and Timeline generation.
+2. **Frontend:** Build `contacts.html` from scratch using the `<h2>` Letter Heading structure.
+
+**Sprint 5: The Knowledge Base (The "Memory")**
+
+1. **Backend Tools:** Create a "Unifier" tool in `tools_notes.py` that fetches both Notes and Journals and sorts them by date.
+2. **Frontend:** Build `memories.html` with the Unified Feed and Toggle Switch.

@@ -1,0 +1,33 @@
+<li
+    class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg hover:border-blue-400 transition-all duration-200 group relative">
+    
+    <div class="absolute top-2 right-2 z-10">
+        <input type="checkbox" name="ids" value="{{ contact.id }}" x-model="selectedIds"
+               @click.stop
+               class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100 checked:opacity-100 transition-opacity"
+               aria-label="Select {{ contact.name }}">
+    </div>
+
+    <button type="button" hx-trigger="click" hx-get="{% url 'get_contact_details' contact.id %}"
+        hx-target="#modal-container" hx-swap="innerHTML" onclick="playSystemSound('success')"
+        class="w-full text-left focus:outline-none focus:ring-2 focus:ring-blue-500 rounded p-1"
+        aria-label="{{ contact.name }}, {{ contact.relationship }}, Health: {{ contact.health_score|default:'0' }}% ({{ contact.health_status }}), Last Contact: {{ contact.parsed_last_contact_date|date:'m-d-Y'|default:'Never' }}">
+
+        <div class="flex justify-between items-start">
+            <div>
+                <h3 class="font-bold text-gray-900 text-lg group-hover:text-blue-700 transition-colors">{{ contact.name
+                    }}</h3>
+                <p class="text-sm text-gray-500 font-medium">{{ contact.relationship|default:"No Relationship" }}</p>
+                {% if contact.organization %}
+                <p class="text-xs text-gray-400 mt-1 uppercase tracking-wide">{{ contact.organization }}</p>
+                {% endif %}
+            </div>
+
+            {% if contact.parsed_last_contact_date %}
+            <span class="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                📅 {{ contact.parsed_last_contact_date|date:"m-d-Y" }}
+            </span>
+            {% endif %}
+        </div>
+    </button>
+</li>

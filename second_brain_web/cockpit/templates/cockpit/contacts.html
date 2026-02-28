@@ -1,0 +1,280 @@
+{% extends 'cockpit/base.html' %}
+{% load custom_filters %}
+
+{% block title %}People | Second Brain{% endblock %}
+
+{% block content %}
+<a href="#contact-list-wrapper" 
+   class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-80 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:font-bold focus:shadow-lg focus:rounded-md ring-2 ring-white">
+   Skip to Contacts List
+</a>
+<div class="flex h-full" id="main-app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="w-80 border-r border-gray-200 bg-gray-50 flex-shrink-0 flex flex-col overflow-hidden">
+
+        <nav class="p-4 border-b border-gray-200 bg-gray-50 flex-shrink-0" aria-label="People System Tools">
+            <div class="flex space-x-2" role="toolbar" aria-label="System Tools">
+                <button id="btn-create-contact" accesskey="n" onclick="playSystemSound('success')"
+                    hx-get="{% url 'render_create_contact_modal' %}" hx-target="#modal-container"
+                    class="flex-1 flex items-center justify-center px-3 py-2 bg-blue-600 border border-blue-700 rounded-md text-sm font-bold text-white hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                    aria-label="Create Person">
+                    <span class="mr-2" aria-hidden="true">➕</span> New
+                </button>
+
+                <button id="btn-log-interaction" accesskey="i" onclick="playSystemSound('success')"
+                    hx-get="{% url 'render_log_interaction_modal' %}" hx-target="#modal-container"
+                    class="flex-1 flex items-center justify-center px-3 py-2 bg-white border border-gray-300 rounded-md text-sm font-bold text-gray-700 hover:bg-green-50 hover:text-green-700 hover:border-green-300 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm"
+                    aria-label="Log Interaction">
+                    <span class="mr-2" aria-hidden="true">📅</span> Log
+                </button>
+
+                <button id="btn-chat" accesskey="c" hx-get="/api/render_chat_panel" hx-target="#chat-drawer-content"
+                    hx-swap="innerHTML" onclick="playSystemSound('success'); toggleChatDrawer(true);"
+                    class="flex-none flex items-center justify-center px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-sm"
+                    aria-label="Agent Chat">
+                    <span aria-hidden="true">🤖</span>
+                </button>
+            </div>
+        </nav>
+
+        <div class="p-4 border-b border-gray-200 bg-white flex-shrink-0">
+            <h1 id="crm-heading"
+                class="text-xs font-bold text-gray-500 uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1"
+                tabindex="-1">
+                People
+            </h1>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-2">
+            <template x-if="viewMode === 'grid'">
+                <div class="mt-4 px-2">
+                    <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Jump to Letter</h2>
+                    <div class="grid grid-cols-4 gap-2">
+                        {% for letter in sorted_keys %}
+                        <a href="#letter-{{ letter }}" onclick="playSystemSound('success')"
+                            class="flex items-center justify-center p-2 bg-white border border-gray-200 rounded hover:bg-blue-50 hover:border-blue-300 text-sm font-bold text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            {{ letter }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </template>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-1 flex flex-col min-w-0 bg-gray-50 overflow-hidden" 
+         x-data="{ viewMode: localStorage.getItem('crmViewMode') || 'grid', showSearch: false }"
+         x-init="$watch('viewMode', val => localStorage.setItem('crmViewMode', val))">
+
+        <!-- TODAY'S OUTREACH WIDGET -->
+        {% if due_contacts %}
+        <div class="bg-blue-50 border-b border-blue-100 px-6 py-4" aria-live="polite">
+            <h2 class="text-xs font-bold text-blue-800 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <span>🔔</span> Action Required: Follow-ups Due
+            </h2>
+            <div class="flex gap-4 overflow-x-auto pb-2">
+                {% for contact in due_contacts %}
+                <div class="flex-shrink-0 bg-white border border-blue-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow min-w-[250px] flex justify-between items-center group">
+                    <div class="cursor-pointer" 
+                         hx-get="{% url 'get_contact_details' contact.id %}"
+                         hx-target="#modal-container">
+                        <div class="font-bold text-gray-800">{{ contact.name }}</div>
+                        <div class="text-xs text-red-500 font-bold mt-1">
+                            {% if contact.next_contact_date < today_str %}Overdue since {{ contact.next_contact_date }}{% else %}Due Today{% endif %}
+                        </div>
+                    </div>
+                    <button onclick="playSystemSound('success')"
+                        hx-get="{% url 'get_contact_details' contact.id %}"
+                        hx-target="#modal-container"
+                        class="text-blue-600 hover:bg-blue-50 p-2 rounded-full" title="Open Contact">
+                        ➡️
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Filter Bar -->
+        <div id="contact-filter-bar"
+            class="bg-white border-b border-gray-200 px-6 py-3 flex space-x-4 overflow-x-auto shadow-sm items-center"
+            role="region" aria-label="Filter Controls">
+
+            <form id="contacts-filter-form" hx-get="/contacts" hx-target="#contact-list-wrapper" hx-trigger="change"
+                class="flex gap-3 items-center w-full">
+                
+                <!-- Search Toggle Button -->
+                <button type="button" @click="showSearch = !showSearch; if(showSearch) $nextTick(() => $refs.contactSearchInput.focus())"
+                        class="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors focus:ring-2 focus:ring-blue-500 outline-none"
+                        aria-label="Toggle Search Contacts"
+                        :aria-expanded="showSearch">
+                    🔍 Search Contacts
+                </button>
+
+                <!-- Search Input & Submit (Collapsible) -->
+                <div x-show="showSearch" x-transition class="flex items-center gap-2 bg-blue-50 p-1 rounded-lg border border-blue-100 shadow-inner">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-2 text-gray-400" aria-hidden="true">🔍</span>
+                        <input type="text" name="q" placeholder="Keywords..." x-ref="contactSearchInput"
+                               class="pl-8 pr-3 py-1.5 rounded-lg border border-blue-200 text-sm font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 shadow-sm"
+                               hx-get="/contacts" 
+                               hx-target="#contact-list-wrapper" 
+                               hx-trigger="keyup changed delay:300ms, search"
+                               aria-label="Contact Search Text">
+                    </div>
+                    <button type="submit" class="px-3 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-md hover:bg-blue-700 transition-colors shadow-sm focus:ring-2 focus:ring-blue-300 outline-none">
+                        Find
+                    </button>
+                </div>
+
+                <!-- Relationship Filter -->
+                <div class="relative">
+                    <select name="relationship"
+                        class="appearance-none pl-3 pr-8 py-1.5 rounded-lg border border-gray-300 text-sm font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white hover:bg-gray-50 cursor-pointer">
+                        <option value="All" {% if current_rel_filter == 'All' %}selected{% endif %}>All Relationships
+                        </option>
+                        <option value="Family" {% if current_rel_filter == 'Family' %}selected{% endif %}>Family</option>
+                        <option value="Friend" {% if current_rel_filter == 'Friend' %}selected{% endif %}>Friend</option>
+                        <option value="Network" {% if current_rel_filter == 'Network' %}selected{% endif %}>Network
+                        </option>
+                        <option value="Work" {% if current_rel_filter == 'Work' %}selected{% endif %}>Work</option>
+                        <option value="Other" {% if current_rel_filter == 'Other' %}selected{% endif %}>Other</option>
+                        <option disabled>──────────</option>
+                        <option value="Outreach" {% if current_rel_filter == 'Outreach' %}selected{% endif %}>⚠️ Need
+                            Outreach</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Tier Filter -->
+                <div class="relative">
+                    <select name="tier"
+                        class="appearance-none pl-3 pr-8 py-1.5 rounded-lg border border-gray-300 text-sm font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white hover:bg-gray-50 cursor-pointer">
+                        <option value="All" {% if current_tier_filter == 'All' %}selected{% endif %}>All Tiers</option>
+                        <option value="VIP" {% if current_tier_filter == 'VIP' %}selected{% endif %}>VIP</option>
+                        <option value="Tier 1" {% if current_tier_filter == 'Tier 1' %}selected{% endif %}>Tier 1</option>
+                        <option value="Tier 2" {% if current_tier_filter == 'Tier 2' %}selected{% endif %}>Tier 2</option>
+                        <option value="Tier 3" {% if current_tier_filter == 'Tier 3' %}selected{% endif %}>Tier 3</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Reset Button -->
+                <button type="button" 
+                        onclick="document.getElementById('contacts-filter-form').reset(); htmx.trigger('#contacts-filter-form', 'change')"
+                        class="px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors border border-transparent hover:border-blue-200">
+                    Reset Filters
+                </button>
+
+                <div class="flex-1"></div>
+
+                <!-- Sort -->
+                <div class="relative mr-4">
+                    <span class="text-xs font-bold text-gray-400 uppercase mr-2">Sort By:</span>
+                    <select name="sort"
+                        class="appearance-none pl-3 pr-8 py-1.5 rounded-lg border border-gray-300 text-sm font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white hover:bg-gray-50 cursor-pointer">
+                        <option value="name" {% if current_sort == 'name' %}selected{% endif %}>Name (A-Z)</option>
+                        <option value="organization" {% if current_sort == 'organization' %}selected{% endif %}>Organization</option>
+                        <option value="last_contact" {% if current_sort == 'last_contact' %}selected{% endif %}>Last Contacted</option>
+                        <option value="health_asc" {% if current_sort == 'health_asc' %}selected{% endif %}>Health (Low to High)</option>
+                        <option value="health_desc" {% if current_sort == 'health_desc' %}selected{% endif %}>Health (High to Low)</option>
+                        <option value="tier" {% if current_sort == 'tier' %}selected{% endif %}>Tier</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+            </form>
+
+            <!-- View Toggle -->
+            <div class="flex items-center bg-gray-100 rounded-lg p-1 border border-gray-200">
+                <button @click="viewMode = 'grid'" 
+                    class="flex items-center gap-2 px-3 py-1.5 rounded-md focus:outline-none transition-all duration-200"
+                    :class="viewMode === 'grid' ? 'bg-white text-blue-600 shadow-sm font-bold' : 'text-gray-500 hover:text-gray-700 font-medium'">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                    </svg>
+                    <span class="text-xs">Grid</span>
+                </button>
+                <button @click="viewMode = 'list'" 
+                    class="flex items-center gap-2 px-3 py-1.5 rounded-md focus:outline-none transition-all duration-200"
+                    :class="viewMode === 'list' ? 'bg-white text-blue-600 shadow-sm font-bold' : 'text-gray-500 hover:text-gray-700 font-medium'">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                    <span class="text-xs">List</span>
+                </button>
+                <button @click="viewMode = 'board'" 
+                    class="flex items-center gap-2 px-3 py-1.5 rounded-md focus:outline-none transition-all duration-200"
+                    :class="viewMode === 'board' ? 'bg-white text-blue-600 shadow-sm font-bold' : 'text-gray-500 hover:text-gray-700 font-medium'">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
+                    </svg>
+                    <span class="text-xs">Board</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="contact-list-wrapper" class="flex-1 overflow-y-auto flex flex-col">
+            {% include 'cockpit/partials/contact_list.html' %}
+        </div>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        window.setActiveFilter = function (btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.classList.remove('bg-blue-600', 'text-white', 'border-blue-700');
+                b.classList.add('bg-white', 'text-gray-600', 'border-gray-300', 'hover:bg-gray-100');
+            });
+            btn.classList.remove('bg-white', 'text-gray-600', 'border-gray-300', 'hover:bg-gray-100');
+            btn.classList.add('bg-blue-600', 'text-white', 'border-blue-700');
+        };
+
+        // Focus heading on load
+        setTimeout(() => {
+            const heading = document.getElementById('crm-heading');
+            if (heading) heading.focus();
+        }, 200);
+
+        // Keyboard Shortcuts
+        document.body.addEventListener('keydown', function (e) {
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+
+            if (e.altKey) {
+                const key = e.key.toLowerCase();
+                if (key === 'n') {
+                    e.preventDefault();
+                    // Manually track focus to avoid capturing the button click
+                    window.lastFocusTarget = document.activeElement;
+                    window.suppressFocusTracking = true;
+                    document.getElementById('btn-create-contact').click();
+                    setTimeout(() => window.suppressFocusTracking = false, 100);
+                } else if (key === 'i') {
+                    e.preventDefault();
+                    document.getElementById('btn-log-interaction').click();
+                } else if (key === 'c') {
+                    e.preventDefault();
+                    const btn = document.getElementById('btn-chat');
+                    if (btn) btn.click();
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

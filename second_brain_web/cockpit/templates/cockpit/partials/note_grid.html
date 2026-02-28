@@ -1,0 +1,63 @@
+<div id="result-count-hidden" class="hidden">Found {{ notes|length }} notes</div>
+
+{% if notes %}
+<div class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+    {% for note in notes %}
+    <div class="break-inside-avoid bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 group cursor-pointer relative overflow-hidden"
+         onclick="playSystemSound('open_modal')"
+         hx-get="{% url 'render_memory_modal' %}?note_id={{ note.id }}"
+         hx-target="#modal-container"
+         tabindex="0"
+         role="article"
+         aria-label="Note: {{ note.title }}">
+        
+        <!-- Hover Overlay/Edit Indicator -->
+        <div class="absolute inset-0 bg-blue-50 bg-opacity-0 group-hover:bg-opacity-10 transition-all pointer-events-none"></div>
+
+        <div class="p-5">
+            <h3 class="font-bold text-gray-800 text-lg mb-1 leading-snug">{{ note.title|default:"Untitled" }}</h3>
+            
+            <!-- Metadata (Moved below Title) -->
+            <div class="flex items-center gap-2 text-[10px] text-gray-400 mb-3">
+                <span>{{ note.updated_at|slice:":10" }}</span>
+                {% if note.attachments.exists %}
+                <span class="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded border border-gray-200 font-bold" title="Attachments">📎 {{ note.attachments.count }}</span>
+                {% endif %}
+                {% if note.linked_project %}
+                <span class="bg-purple-50 text-purple-600 px-1.5 py-0.5 rounded border border-purple-100" title="Project"><span aria-hidden="true">🏗️</span></span>
+                {% endif %}
+                {% if note.linked_goal %}
+                <span class="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded border border-blue-100" title="Goal"><span aria-hidden="true">🎯</span></span>
+                {% endif %}
+            </div>
+
+            <div class="text-gray-600 text-sm line-clamp-6 mb-4 prose prose-sm max-w-none" 
+                 x-data 
+                 x-html="marked.parse(`{{ note.content|escapejs }}`)"></div>
+            
+            <!-- Tags -->
+            {% if note.tags %}
+            <div class="flex flex-wrap gap-1 mt-3">
+                {% for tag in note.tags.split|slice:":3" %} 
+                <!-- Simple split, assumes space or basic parsing. Ideally backend parses. -->
+                <span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium">#{{ tag }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-20 animate-fade-in">
+    <div class="inline-block p-6 rounded-full bg-yellow-50 mb-4">
+        <span class="text-5xl" aria-hidden="true">📝</span>
+    </div>
+    <h3 class="text-xl font-bold text-gray-800 mb-2">Your Knowledge Base is Empty</h3>
+    <p class="text-gray-500 max-w-md mx-auto">Capture ideas, meeting notes, and resources to build your knowledge base. Your notes will be organized here.</p>
+    <button onclick="document.getElementById('btn-new-memory').click()" 
+            class="mt-6 text-blue-600 font-bold hover:underline">
+        Create your first note
+    </button>
+</div>
+{% endif %}

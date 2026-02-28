@@ -1,0 +1,201 @@
+<div id="modal-backdrop" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-[60] flex items-center justify-center p-4 animate-fade-in"
+     x-data="{
+        desc: '{{ item.food_item|escapejs }}',
+        cal: '{{ item.calories|default:0 }}',
+        prot: '{{ item.protein_g|default:0 }}',
+        carb: '{{ item.carbs_g|default:0 }}',
+        fat: '{{ item.fat_g|default:0 }}',
+        fiber: '{{ item.fiber_g|default:0 }}',
+        sugar: '{{ item.sugar_g|default:0 }}',
+        sodium: '{{ item.sodium_mg|default:0 }}',
+        cholesterol: '{{ item.cholesterol_mg|default:0 }}',
+        loading: false,
+        announcement: '',
+        showAdvanced: false,
+        templates: [
+            {% for t in templates %}
+                { id: {{ t.id }}, name: '{{ t.name|escapejs }}' },
+            {% endfor %}
+        ],
+        selectedTemplate: '',
+
+        loadTemplate() {
+            if (!this.selectedTemplate) return;
+            fetch('/api/health/template/' + this.selectedTemplate + '/')
+                .then(res => res.json())
+                .then(data => {
+                    this.desc = data.name;
+                    this.cal = data.calories || 0;
+                    this.prot = data.protein || 0;
+                    this.carb = data.carbs || 0;
+                    this.fat = data.fat || 0;
+                    this.fiber = data.fiber || 0;
+                    this.sugar = data.sugar || 0;
+                    this.sodium = data.sodium || 0;
+                    this.cholesterol = data.cholesterol || 0;
+                    this.announcement = 'Loaded meal template: ' + data.name;
+                });
+        },
+        
+        async fetchEstimate() {
+            if (!this.desc) return;
+            this.loading = true;
+            this.announcement = 'Estimating nutrition...';
+            
+            const formData = new FormData();
+            formData.append('description', this.desc);
+            
+            try {
+                const response = await fetch('{% url 'estimate_nutrition' %}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {'X-CSRFToken': '{{ csrf_token }}'}
+                });
+                const data = await response.json();
+                
+                if (data.calories !== undefined) {
+                    this.cal = data.calories;
+                    this.prot = data.protein;
+                    this.carb = data.carbs;
+                    this.fat = data.fat;
+                    this.fiber = data.fiber || 0;
+                    this.sugar = data.sugar || 0;
+                    this.sodium = data.sodium || 0;
+                    this.cholesterol = data.cholesterol || 0;
+                    this.announcement = `Estimated: ${data.calories} calories, ${data.protein}g protein...`;
+                    playSystemSound('success');
+                } else {
+                    this.announcement = 'Could not estimate nutrition.';
+                }
+            } catch (e) {
+                this.announcement = 'Error connecting to AI.';
+            } finally {
+                this.loading = false;
+            }
+        }
+     }"
+     onclick="if(event.target === this) handleModalClose('modal-backdrop')">
+    
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden transform transition-all animate-modal-slide-in" role="dialog" aria-modal="true">
+        
+        <!-- Accessibility Announcement -->
+        <div class="sr-only" aria-live="polite" x-text="announcement"></div>
+
+        <!-- Modal Header -->
+        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-orange-50">
+            <h2 class="text-xl font-bold text-orange-800">
+                {% if item %}Edit{% else %}Log New{% endif %} Meal
+            </h2>
+            <button onclick="handleModalClose('modal-backdrop', 'health-view-heading')" class="text-gray-400 hover:text-gray-600 p-2" aria-label="Close Modal">&times;</button>
+        </div>
+
+        <form hx-post="{% url 'save_health_item' %}" hx-swap="none" hx-on::after-request="handleModalClose('modal-backdrop', 'health-view-heading')" class="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
+            <input type="hidden" name="type" value="meal">
+            {% if item %}<input type="hidden" name="id" value="{{ item.id }}">{% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="md:col-span-2 grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="meal-date" class="block text-xs font-bold text-gray-400 uppercase mb-1">Meal Date</label>
+                        <input type="date" id="meal-date" name="date" value="{{ item.date|default:today_str }}" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-orange-500 focus:border-orange-500">
+                    </div>
+                    <div>
+                        <label for="meal-type" class="block text-xs font-bold text-gray-400 uppercase mb-1">Meal Type</label>
+                        <select id="meal-type" name="meal_type" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-orange-500 focus:border-orange-500">
+                            <option value="Breakfast" {% if item.meal_type == 'Breakfast' %}selected{% endif %}>Breakfast</option>
+                            <option value="Lunch" {% if item.meal_type == 'Lunch' %}selected{% endif %}>Lunch</option>
+                            <option value="Dinner" {% if item.meal_type == 'Dinner' %}selected{% endif %}>Dinner</option>
+                            <option value="Snack" {% if item.meal_type == 'Snack' %}selected{% endif %}>Snack</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label for="load-template" class="block text-xs font-bold text-gray-400 uppercase mb-1">Load Saved Meal</label>
+                    <select id="load-template" x-model="selectedTemplate" @change="loadTemplate()" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-orange-500 text-sm">
+                        <option value="">-- Select --</option>
+                        <template x-for="t in templates" :key="t.id">
+                            <option :value="t.id" x-text="t.name"></option>
+                        </template>
+                    </select>
+                </div>
+            </div>
+            
+            <div>
+                <label for="food-item" class="block text-xs font-bold text-gray-400 uppercase mb-1">What did you eat?</label>
+                <div class="flex gap-2">
+                    <input type="text" id="food-item" name="food_item" x-model="desc" @keydown.enter.prevent="fetchEstimate()" required placeholder="e.g. Avocado Toast" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-orange-500 focus:border-orange-500">
+                    <button type="button" 
+                            @click="fetchEstimate()"
+                            :disabled="loading"
+                            class="px-4 py-2 bg-orange-100 text-orange-700 font-bold rounded-lg hover:bg-orange-200 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            aria-label="Estimate with AI">
+                        <span x-show="!loading">✨</span>
+                        <span x-show="loading" class="animate-spin">↻</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-6">
+                <!-- Macros -->
+                <div>
+                    <h3 class="text-sm font-bold text-gray-600 uppercase tracking-wider mb-4">Nutritional Info</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div>
+                            <label for="calories" class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Calories</label>
+                            <input type="number" id="calories" name="calories" x-model="cal" class="w-full border-gray-300 rounded-lg p-2 text-sm focus:ring-orange-500">
+                        </div>
+                        <div>
+                            <label for="protein" class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Protein (g)</label>
+                            <input type="number" id="protein" name="protein" x-model="prot" class="w-full border-gray-300 rounded-lg p-2 text-sm focus:ring-orange-500">
+                        </div>
+                        <div>
+                            <label for="carbs" class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Carbs (g)</label>
+                            <input type="number" id="carbs" name="carbs" x-model="carb" class="w-full border-gray-300 rounded-lg p-2 text-sm focus:ring-orange-500">
+                        </div>
+                        <div>
+                            <label for="fat" class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Fat (g)</label>
+                            <input type="number" id="fat" name="fat" x-model="fat" class="w-full border-gray-300 rounded-lg p-2 text-sm focus:ring-orange-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced / Micros -->
+                <div>
+                    <button type="button" @click="showAdvanced = !showAdvanced" class="flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-orange-500 uppercase tracking-wider focus:outline-none">
+                        <svg class="w-4 h-4 transition-transform" :class="showAdvanced ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        Advanced Details
+                    </button>
+                    
+                    <div x-show="showAdvanced" x-collapse class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-200">
+                        <div>
+                            <label for="fiber" class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Fiber (g)</label>
+                            <input type="number" id="fiber" name="fiber" x-model="fiber" class="w-full border-gray-300 rounded-lg p-2 text-sm focus:ring-orange-500">
+                        </div>
+                        <div>
+                            <label for="sugar" class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Sugar (g)</label>
+                            <input type="number" id="sugar" name="sugar" x-model="sugar" class="w-full border-gray-300 rounded-lg p-2 text-sm focus:ring-orange-500">
+                        </div>
+                        <div>
+                            <label for="sodium" class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Sodium (mg)</label>
+                            <input type="number" id="sodium" name="sodium" x-model="sodium" class="w-full border-gray-300 rounded-lg p-2 text-sm focus:ring-orange-500">
+                        </div>
+                        <div>
+                            <label for="cholesterol" class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Cholest. (mg)</label>
+                            <input type="number" id="cholesterol" name="cholesterol" x-model="cholesterol" class="w-full border-gray-300 rounded-lg p-2 text-sm focus:ring-orange-500">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 p-3 bg-orange-50 rounded-xl border border-orange-100">
+                <input type="checkbox" id="save-library" name="save_to_library" class="rounded text-orange-600 focus:ring-orange-500">
+                <label for="save-library" class="text-sm font-bold text-orange-800">Save to Meal Library</label>
+            </div>
+
+            <div class="pt-4 flex gap-3">
+                <button type="button" onclick="handleModalClose('modal-backdrop', 'health-view-heading')" class="flex-1 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-colors">Cancel</button>
+                <button type="submit" class="flex-1 py-3 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700 shadow-lg shadow-orange-200 transition-all">Save Meal</button>
+            </div>
+        </form>
+    </div>
+</div>

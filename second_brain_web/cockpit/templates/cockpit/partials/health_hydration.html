@@ -1,0 +1,39 @@
+    <!-- Hydration Tracker -->
+    <div id="hydration-widget" class="bg-blue-50 border border-blue-100 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6 transition-all duration-300">
+        <div class="flex items-center gap-4">
+            <div class="bg-blue-100 p-3 rounded-full text-blue-500">
+                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path></svg>
+            </div>
+            <div>
+                <h3 id="hydration-heading" tabindex="-1" class="text-lg font-black text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1">Hydration</h3>
+                <p class="text-xs text-blue-600 font-bold uppercase tracking-wider">{{ today_metric.water_intake }} glasses today</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-6">
+            <!-- Droplet Visuals (Max 8 shown) -->
+            <div class="flex gap-1" role="img" aria-label="{{ today_metric.water_intake }} out of 8 daily goal">
+                {% for i in "12345678" %}
+                <div class="w-4 h-6 rounded-full transition-all duration-300
+                            {% if forloop.counter <= today_metric.water_intake %}bg-blue-500 shadow-sm scale-110{% else %}bg-blue-200 opacity-50{% endif %}"></div>
+                {% endfor %}
+            </div>
+
+            <!-- Controls -->
+            <div class="flex items-center bg-white rounded-lg shadow-sm border border-blue-100 overflow-hidden">
+                <button hx-post="{% url 'update_water' %}" 
+                        hx-vals='{"amount": -1}'
+                        hx-target="#hydration-widget"
+                        hx-swap="outerHTML"
+                        class="px-4 py-2 text-blue-400 hover:bg-blue-50 hover:text-blue-600 font-bold transition-colors focus:outline-none focus:bg-blue-100"
+                        aria-label="Decrease water intake">-</button>
+                <div class="w-px h-6 bg-blue-100"></div>
+                <button hx-post="{% url 'update_water' %}" 
+                        hx-vals='{"amount": 1}'
+                        hx-target="#hydration-widget"
+                        hx-swap="outerHTML"
+                        class="px-4 py-2 text-blue-400 hover:bg-blue-50 hover:text-blue-600 font-bold transition-colors focus:outline-none focus:bg-blue-100"
+                        aria-label="Increase water intake">+</button>
+            </div>
+        </div>
+    </div>

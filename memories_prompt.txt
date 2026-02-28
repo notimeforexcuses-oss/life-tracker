@@ -1,0 +1,67 @@
+# Role & Objective
+You are an expert Full-Stack Software Engineer with a specialization in Accessibility (WCAG 2.1 AA, JAWS optimization) and Django/HTMX architectures. Your goal is to implement the "Memories" tab for the Life Tracker application. This module serves as the central repository for **Notes** (Knowledge Base) and **Journal Entries** (Timeline/Daily Reflections).
+
+The implementation must be "production-ready," matching the existing style of the Projects and CRM tabs while introducing industry-standard features found in tools like Notion, Evernote, or Day One.
+
+# Core Requirements
+
+## 1. Architecture & Models
+- **Models:** Utilize the existing `Notes` and `JournalEntries` models defined in `cockpit/models.py`. Do NOT alter the schema.
+- **Views (`cockpit/views.py`):**
+  - `memories_page`: The main container.
+  - `render_memories_content`: A view to swap the main display area (Notes Grid vs. Journal Timeline) and handle search/filtering.
+  - `process_quick_journal`: A new endpoint for the inline "Quick Capture" form.
+  - CRUD operations for Notes/Journal.
+- **URLs:** Register endpoints in `second_brain_web/urls.py` under ` # --- MEMORIES ---`.
+
+## 2. User Interface (UI) - "Memories" Tab
+Create `cockpit/templates/cockpit/memories.html` (extending `base.html`). Use Alpine.js `x-data="{ currentTab: 'notes' }"` to manage state.
+
+### A. Sidebar (Left) - Filters
+- **Navigation:** Buttons to toggle `currentTab` between 'notes' and 'journal'.
+- **Dynamic Tags:** Parse the `tags` text field from all Notes/Entries. Generate a list of unique tags (e.g., "#ideas", "#work"). Clicking one filters the main view via HTMX.
+- **Entity Filter:** Accordions to filter by Linked Project or Linked Contact (reusing logic from the Projects sidebar).
+
+### B. Main Content (Right)
+- **Header:**
+  - **Search:** A prominent input field (`hx-trigger="keyup changed delay:300ms"`) to filter content.
+  - **Context-Aware "New" Button:** If `currentTab === 'notes'`, opens modal for New Note. If `currentTab === 'journal'`, opens modal for New Entry.
+- **View 1: Notes (Masonry Grid):**
+  - Use CSS columns (`columns-1 md:columns-2 lg:columns-3 gap-4`) to create a "Google Keep" style layout.
+  - Cards should display Title, truncated Content, and Tags as chips.
+- **View 2: Journal (Timeline):**
+  - **Quick Capture:** An inline form at the very top (like "What's on your mind?") to instantly add a text-only entry. Use `sessionStorage` to preserve focus on this input after submission.
+  - **Timeline:** A vertical list grouped by Month/Year.
+
+## 3. Interaction Design (Modals & Wizards)
+- **Unified Modal (`memory_modal.html`):**
+  - Re-use the "Wizard" pattern (`currentView` state) for linking.
+  - **Toggle Type:** Allow switching between "Note" and "Journal Entry" within the modal (like the Contact modal type selector).
+  - **Linking:** Include the "Link Work/Contacts" picker flow to associate items with Projects, Goals, or Contacts.
+- **Sound:** Integrate `playSystemSound('success')` on creation and `playSystemSound('open_modal')` on triggers.
+
+## 4. Accessibility & JAWS Optimization (CRITICAL)
+- **Semantic Structure:**
+  - **Lists:** Use `<ul>` and `<li>` for the Notes Grid and Journal Timeline.
+  - **Metadata:** Inside a card, Tags and Links MUST be in their own `<ul>` list to ensure JAWS separates them from the body text.
+- **Focus Management:**
+  - **Global Tracking:** Rely on the `window.lastFocusTarget` logic in `base.html`.
+  - **Trap:** Implement the `handlePickerTab` focus trap in the linking wizard (copy from `contact_modal.html`).
+  - **OOB Updates:** When the list refreshes (search/filter), ensure focus is NOT lost. If the list was replaced, focus should ideally remain in the search box or the filter that triggered it.
+- **Live Regions:** Add an invisible element `<div aria-live="polite" id="result-count">` that updates with the number of results found after a search (e.g., "Found 12 notes").
+
+## 5. Constraints & Safeguards
+- **Isolation:** Do NOT modify `tasks.html` or `contacts.html`.
+- **Database:** Do not delete existing data.
+- **Empty States:** If no data exists for a view, render a friendly, accessible "Empty State" (e.g., "No notes found. Create your first one!").
+
+# Execution Plan
+1.  **Backend:** Create helper `get_memories_context` (fetches notes, entries, and derives unique tags) and the views.
+2.  **Template Shell:** Build `memories.html` with the Alpine state for Tab switching.
+3.  **Partials:**
+    - `note_grid.html`: The masonry layout.
+    - `journal_timeline.html`: The linear layout with Quick Capture.
+    - `memory_modal.html`: The creation/edit form with Linking Wizard.
+4.  **Wiring:** Connect Search, Quick Capture, and Modal triggers.
+
+Wait for user approval before executing.

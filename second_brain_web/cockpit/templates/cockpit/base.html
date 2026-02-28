@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Second Brain{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #000;
+            color: white;
+            padding: 8px;
+            z-index: 100;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        .nav-btn {
+            text-align: left;
+            width: 100%;
+        }
+
+        /* Drawer Animation */
+        #chat-drawer {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Smooth Task Deletion Fade */
+        .htmx-swapping {
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
+        }
+
+        /* Toast Notification Styles */
+        #toast-container {
+            pointer-events: auto;
+        }
+
+        .toast-enter {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        .toast-enter-active {
+            transform: translateX(0);
+            opacity: 1;
+            transition: all 0.3s ease-out;
+        }
+
+        .toast-exit {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast-exit-active {
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.3s ease-in;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 h-screen flex flex-col overflow-hidden" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <div id="aria-notifications" aria-live="assertive" class="sr-only"></div>
+
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 w-80"></div>
+
+    <!-- THE APP SHELL: Everything that should become 'inert' when a modal is open -->
+    <div id="app-shell" class="flex-1 flex overflow-hidden">
+        <nav class="w-64 bg-gray-100 border-r border-gray-200 flex-shrink-0 flex flex-col justify-between"
+            aria-label="Main Navigation">
+            <div class="p-4">
+                <h1 class="font-bold text-xl mb-6 text-gray-700">🧠 Second Brain</h1>
+
+                <div class="space-y-1">
+                    <button id="nav-dashboard" onclick="window.location.href='/'"
+                        class="nav-btn block px-3 py-2 rounded hover:bg-gray-200 text-gray-600 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        accesskey="1" aria-label="Dashboard">
+                        📊 Dashboard
+                    </button>
+                    <button id="nav-projects" onclick="window.location.href='/projects'"
+                        class="nav-btn block px-3 py-2 rounded hover:bg-gray-200 text-gray-600 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        accesskey="2" aria-label="Projects">
+                        🏗️ Projects
+                    </button>
+                    <button id="nav-crm" onclick="window.location.href='/contacts'"
+                        class="nav-btn block px-3 py-2 rounded hover:bg-gray-200 text-gray-600 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        accesskey="3" aria-label="People">
+                        👥 People
+                    </button>
+                    <button id="nav-memories" onclick="window.location.href='/memories'"
+                        class="nav-btn block px-3 py-2 rounded hover:bg-gray-200 text-gray-600 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        accesskey="4" aria-label="Memories">
+                        🧠 Memories
+                    </button>
+                    <button id="nav-chat" onclick="window.location.href='/chat'"
+                        class="nav-btn block px-3 py-2 rounded hover:bg-gray-200 text-gray-600 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        accesskey="5" aria-label="Agent Chat">
+                        🤖 Chat
+                    </button>
+                    <button id="nav-schedule" onclick="window.location.href='/schedule'"
+                        class="nav-btn block px-3 py-2 rounded hover:bg-gray-200 text-gray-600 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        accesskey="7" aria-label="Schedule">
+                        📅 Schedule
+                    </button>
+                    <button id="nav-health" onclick="window.location.href='/health'"
+                        class="nav-btn block px-3 py-2 rounded hover:bg-gray-200 text-gray-600 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        accesskey="6" aria-label="Health">
+                        ❤️ Health
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <main id="main-content" class="flex-1 overflow-y-auto p-0 relative">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+
+    <div id="chat-drawer"
+        class="fixed inset-y-0 right-0 w-96 bg-white shadow-2xl transform translate-x-full z-50 flex flex-col border-l border-gray-200"
+        role="dialog" aria-label="Chat Assistant" aria-modal="true" inert>
+
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+            <h2 class="text-lg font-bold text-gray-800" id="chat-drawer-heading" tabindex="-1">🤖 Agent Chat</h2>
+            <button onclick="toggleChatDrawer(false)"
+                class="text-gray-400 hover:text-gray-800 p-2 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                aria-label="Close Chat">
+                ✕
+            </button>
+        </div>
+
+        <div id="chat-drawer-content" 
+             class="flex-1 flex flex-col min-h-0"
+             hx-get="{% url 'render_chat_panel' %}" 
+             hx-trigger="load, open_chat_panel"
+             hx-swap="innerHTML">
+            <div class="flex-1 flex items-center justify-center text-gray-400 italic">
+                Loading chat...
+            </div>
+        </div>
+    </div>
+
+    <!-- THE SAFE ZONE: Modals live here, outside the app-shell -->
+    <div id="modal-container"></div>
+
+    <div id="command-palette"
+        class="hidden fixed inset-0 bg-gray-900 bg-opacity-30 z-50 flex items-start justify-center pt-24" role="dialog"
+        aria-modal="true" inert>
+        <div
+            class="bg-white w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden border border-gray-200 flex flex-col max-h-[70vh]">
+            <div class="p-4 border-b border-gray-200 flex items-center">
+                <span class="text-gray-400 mr-3 text-xl">🔍</span>
+                <input id="cmd-input" type="text" hx-get="/api/search" hx-trigger="keyup changed delay:300ms"
+                    hx-target="#search-results" placeholder="Search Areas, Goals, Projects, Tasks..."
+                    class="w-full text-lg outline-none text-gray-800 placeholder-gray-400" autocomplete="off">
+                <button onclick="document.getElementById('command-palette').classList.add('hidden')"
+                    class="text-gray-400 hover:text-gray-600 ml-2">ESC</button>
+            </div>
+            <div id="search-results" class="overflow-y-auto p-2 bg-gray-50 min-h-[100px]">
+                <p class="text-center text-gray-400 mt-4 text-sm">Type to search...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- AUDIO ENGINE 3.0 ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        window.enableSoundEffects = true;
+
+        function playSystemSound(type) {
+            if (!window.enableSoundEffects) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const now = audioCtx.currentTime;
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (type === 'success') {
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(800, now);
+                oscillator.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+                gainNode.gain.setValueAtTime(0.1, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                oscillator.start();
+                oscillator.stop(now + 0.2);
+            } else if (type === 'save') {
+                oscillator.type = 'square';
+                oscillator.frequency.setValueAtTime(300, now);
+                oscillator.frequency.linearRampToValueAtTime(600, now + 0.1);
+                gainNode.gain.setValueAtTime(0.05, now);
+                gainNode.gain.linearRampToValueAtTime(0, now + 0.15);
+                oscillator.start();
+                oscillator.stop(now + 0.15);
+            } else if (type === 'ai_msg') {
+                oscillator.type = 'triangle';
+                oscillator.frequency.setValueAtTime(440, now);
+                oscillator.frequency.setValueAtTime(660, now + 0.15);
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.1, now + 0.05);
+                gainNode.gain.linearRampToValueAtTime(0.05, now + 0.15);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+                oscillator.start();
+                oscillator.stop(now + 0.6);
+            } else if (type === 'open_drawer') {
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(150, now);
+                oscillator.frequency.linearRampToValueAtTime(300, now + 0.2);
+                gainNode.gain.setValueAtTime(0.02, now);
+                gainNode.gain.linearRampToValueAtTime(0, now + 0.2);
+                oscillator.start();
+                oscillator.stop(now + 0.2);
+            } else if (type === 'open_modal') {
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(500, now);
+                oscillator.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+                gainNode.gain.setValueAtTime(0.1, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                oscillator.start();
+                oscillator.stop(now + 0.1);
+            } else if (type === 'close') {
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(300, now);
+                oscillator.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+                gainNode.gain.setValueAtTime(0.1, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                oscillator.start();
+                oscillator.stop(now + 0.15);
+            }
+        }
+
+        // --- TOAST NOTIFICATION ENGINE ---
+        window.showToast = function (message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const isSuccess = type === 'success';
+            const bgColor = isSuccess ? 'bg-green-600' : 'bg-blue-600';
+            const icon = isSuccess ? '✅' : 'ℹ️';
+            toast.className = `flex items-center justify-between p-4 rounded-lg shadow-xl text-white ${bgColor} toast-enter transform transition-all duration-300`;
+            toast.innerHTML = `<div class="flex items-center"><span class="text-xl mr-3" role="presentation">${icon}</span><span class="font-bold text-sm">${message}</span></div><button onclick="this.parentElement.remove()" class="ml-4 text-white hover:text-gray-200 focus:outline-none">✕</button>`;
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('toast-enter');
+                toast.classList.add('toast-enter-active');
+            });
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.classList.remove('toast-enter-active');
+                    toast.classList.add('toast-exit-active');
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 4000);
+        };
+
+        window.persistToast = function (message) {
+            sessionStorage.setItem('pending_toast', message);
+        };
+
+        function checkForPendingToast() {
+            const msg = sessionStorage.getItem('pending_toast');
+            if (msg) {
+                playSystemSound('save');
+                showToast(msg, 'success');
+                sessionStorage.removeItem('pending_toast');
+            }
+        }
+
+        // --- UI LOGIC & FOCUS MANAGEMENT ---
+        window.toggleFocusTrap = function (shouldTrap) {
+            const shell = document.getElementById('app-shell');
+            const drawer = document.getElementById('chat-drawer');
+            const skipLink = document.querySelector('.skip-link');
+            
+            if (shouldTrap) {
+                console.log("[Director] Engaging Shell Lockdown.");
+                if (shell) shell.setAttribute('inert', '');
+                if (skipLink) skipLink.setAttribute('inert', '');
+                // If a modal is opening, we also want the drawer to be inert 
+                // (unless the drawer itself called the trap, which we handle via toggleChatDrawer)
+                if (drawer && drawer.classList.contains('translate-x-full')) {
+                    drawer.setAttribute('inert', '');
+                }
+            } else {
+                console.log("[Director] Releasing Shell.");
+                if (shell) shell.removeAttribute('inert');
+                if (skipLink) skipLink.removeAttribute('inert');
+                // Only release the drawer if it's not actually open
+                if (drawer && drawer.classList.contains('translate-x-full')) {
+                    drawer.setAttribute('inert', '');
+                } else if (drawer) {
+                    drawer.removeAttribute('inert');
+                }
+            }
+        };
+
+        // --- MODAL FOCUS CYCLING ---
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                const modal = document.querySelector('[role="dialog"]');
+                if (modal && !modal.closest('[inert]')) {
+                    const focusables = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                    if (focusables.length === 0) return;
+                    const first = focusables[0];
+                    const last = focusables[focusables.length - 1];
+                    if (e.shiftKey) {
+                        if (document.activeElement === first) {
+                            e.preventDefault();
+                            last.focus();
+                        }
+                    } else {
+                        if (document.activeElement === last) {
+                            e.preventDefault();
+                            first.focus();
+                        }
+                    }
+                }
+            }
+        });
+
+        window.toggleChatDrawer = function (show) {
+            const drawer = document.getElementById('chat-drawer');
+            if (show) {
+                playSystemSound('open_drawer');
+                drawer.classList.remove('translate-x-full');
+                toggleFocusTrap(true);
+                drawer.removeAttribute('inert');
+                setTimeout(() => {
+                    const heading = document.getElementById('chat-drawer-heading');
+                    if (heading) heading.focus();
+                }, 100);
+            } else {
+                playSystemSound('close');
+                drawer.classList.add('translate-x-full');
+                toggleFocusTrap(false);
+                drawer.setAttribute('inert', '');
+            }
+        };
+
+        window.handleModalClose = function (modalId, returnFocusId) {
+            playSystemSound('close');
+            const modalEl = document.getElementById(modalId);
+            if (modalEl) modalEl.remove();
+            toggleFocusTrap(false);
+            if (returnFocusId) {
+                setTimeout(() => document.getElementById(returnFocusId).focus(), 50);
+            }
+        };
+
+        // --- GLOBAL HTMX FOCUS MANAGEMENT ---
+        window.lastFocusTarget = null;
+        document.body.addEventListener('htmx:beforeRequest', function(evt) {
+            window.lastFocusTarget = document.activeElement;
+        });
+
+        document.body.addEventListener('htmx:afterSettle', function(evt) {
+            const targetId = evt.detail.target.id;
+            
+            if (targetId === 'modal-container') {
+                if (evt.detail.target.innerHTML.trim() !== "") {
+                    console.log("[Global] Modal Content Detected.");
+                    toggleFocusTrap(true);
+                    
+                    // Route JAWS to the modal heading immediately
+                    requestAnimationFrame(() => {
+                        const header = evt.detail.target.querySelector('h2, h3');
+                        if (header) {
+                            header.focus();
+                        } else {
+                            const firstInput = evt.detail.target.querySelector('input, select, textarea, button');
+                            if (firstInput) firstInput.focus();
+                        }
+                    });
+                } else {
+                    console.log("[Global] Modal Container Emptied.");
+                    toggleFocusTrap(false);
+                    if (window.lastFocusTarget && document.body.contains(window.lastFocusTarget)) {
+                        window.lastFocusTarget.focus();
+                    }
+                }
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkForPendingToast();
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.altKey && e.key.toLowerCase() === 's') {
+                if (!window.location.pathname.includes('/projects')) return;
+                e.preventDefault();
+                const palette = document.getElementById('command-palette');
+                if (palette.classList.contains('hidden')) {
+                    playSystemSound('open_modal');
+                    palette.classList.remove('hidden');
+                    palette.removeAttribute('inert');
+                    document.getElementById('cmd-input').focus();
+                } else {
+                    palette.classList.add('hidden');
+                    palette.setAttribute('inert', '');
+                }
+            }
+            if (e.altKey && e.key.toLowerCase() === 'c') {
+                e.preventDefault();
+                const drawer = document.getElementById('chat-drawer');
+                const isOpen = !drawer.classList.contains('translate-x-full');
+                toggleChatDrawer(!isOpen);
+            }
+            if (e.key === 'Escape') {
+                const palette = document.getElementById('command-palette');
+                palette.classList.add('hidden');
+                palette.setAttribute('inert', '');
+            }
+        });
+    </script>
+</body>
+
+</html>

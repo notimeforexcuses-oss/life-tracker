@@ -1,0 +1,109 @@
+<div id="modal-backdrop" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-[60] flex items-center justify-center p-4 animate-fade-in"
+     x-data="{}"
+     onclick="if(event.target === this) handleModalClose('modal-backdrop')">
+    
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden transform transition-all animate-modal-slide-in" role="dialog" aria-modal="true">
+        
+        <!-- Modal Header -->
+        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-indigo-50">
+            <h2 class="text-xl font-bold text-indigo-800">
+                {% if item %}Edit{% else %}Log{% endif %} Sleep Metric
+            </h2>
+            <button onclick="handleModalClose('modal-backdrop', 'health-view-heading')" class="text-gray-400 hover:text-gray-600 p-2" aria-label="Close Modal">&times;</button>
+        </div>
+
+        <form hx-post="{% url 'save_health_item' %}" hx-swap="none" hx-on::after-request="handleModalClose('modal-backdrop', 'health-view-heading')" class="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
+            <input type="hidden" name="type" value="sleep">
+            {% if item %}<input type="hidden" name="id" value="{{ item.id }}">{% endif %}
+
+            <div>
+                <label for="sleep-date" class="block text-xs font-bold text-gray-400 uppercase mb-1">Date</label>
+                <input type="date" id="sleep-date" name="date" value="{{ item.date|default:today_str }}" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <p class="text-[10px] text-gray-400 mt-1">Select the date you woke up on.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <label for="sleep-hours" class="block text-xs font-bold text-gray-500 uppercase mb-3">Total Sleep</label>
+                    <div class="flex items-center gap-3">
+                        <input type="number" id="sleep-hours" step="0.1" name="hours" value="{{ item.sleep_hours|default:7.0 }}" class="w-24 border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 text-lg font-black">
+                        <span class="text-gray-400 font-bold uppercase text-xs">Hours</span>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <label for="readiness-score" class="block text-xs font-bold text-gray-500 uppercase mb-3">Readiness</label>
+                    <div class="flex items-center gap-3">
+                        <input type="number" id="readiness-score" name="readiness" min="0" max="100" value="{{ item.readiness_score|default:70 }}" class="w-24 border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 text-lg font-black">
+                        <span class="text-gray-400 font-bold uppercase text-xs">%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Physiological Data -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-3 bg-blue-50 rounded-xl border border-blue-100">
+                    <label for="hrv" class="block text-[10px] font-bold text-blue-400 uppercase mb-1">HRV (ms)</label>
+                    <input type="number" id="hrv" name="hrv" value="{{ item.hrv|default:'' }}" placeholder="--" class="w-full bg-transparent border-none p-0 text-xl font-black text-blue-700 focus:ring-0">
+                </div>
+                <div class="p-3 bg-red-50 rounded-xl border border-red-100">
+                    <label for="resting_hr" class="block text-[10px] font-bold text-red-400 uppercase mb-1">Resting HR</label>
+                    <input type="number" id="resting_hr" name="resting_hr" value="{{ item.resting_hr|default:'' }}" placeholder="--" class="w-full bg-transparent border-none p-0 text-xl font-black text-red-700 focus:ring-0">
+                </div>
+            </div>
+
+            <!-- Sleep Phases Breakdown -->
+            <div x-data="{ showPhases: {% if item.sleep_deep_min %}true{% else %}false{% endif %} }" class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase">Phase Breakdown</h3>
+                    <button type="button" @click="showPhases = !showPhases" class="text-indigo-600 text-xs font-bold hover:underline">
+                        <span x-show="!showPhases">+ Add Details</span>
+                        <span x-show="showPhases">- Hide Details</span>
+                    </button>
+                </div>
+
+                <div x-show="showPhases" class="grid grid-cols-2 sm:grid-cols-4 gap-3 animate-fade-in">
+                    <div class="p-2 bg-indigo-50 rounded-lg border border-indigo-100 text-center">
+                        <label class="block text-[9px] font-bold text-indigo-400 uppercase mb-1">Deep</label>
+                        <input type="number" name="deep_min" value="{{ item.sleep_deep_min|default:0 }}" class="w-full bg-transparent border-none p-0 text-center font-bold text-indigo-700 focus:ring-0">
+                        <span class="text-[8px] text-indigo-300 font-bold uppercase">Min</span>
+                    </div>
+                    <div class="p-2 bg-purple-50 rounded-lg border border-purple-100 text-center">
+                        <label class="block text-[9px] font-bold text-purple-400 uppercase mb-1">REM</label>
+                        <input type="number" name="rem_min" value="{{ item.sleep_rem_min|default:0 }}" class="w-full bg-transparent border-none p-0 text-center font-bold text-purple-700 focus:ring-0">
+                        <span class="text-[8px] text-purple-300 font-bold uppercase">Min</span>
+                    </div>
+                    <div class="p-2 bg-blue-50 rounded-lg border border-blue-100 text-center">
+                        <label class="block text-[9px] font-bold text-blue-400 uppercase mb-1">Light</label>
+                        <input type="number" name="light_min" value="{{ item.sleep_light_min|default:0 }}" class="w-full bg-transparent border-none p-0 text-center font-bold text-blue-700 focus:ring-0">
+                        <span class="text-[8px] text-blue-300 font-bold uppercase">Min</span>
+                    </div>
+                    <div class="p-2 bg-orange-50 rounded-lg border border-orange-100 text-center">
+                        <label class="block text-[9px] font-bold text-orange-400 uppercase mb-1">Awake</label>
+                        <input type="number" name="awake_min" value="{{ item.sleep_awake_min|default:0 }}" class="w-full bg-transparent border-none p-0 text-center font-bold text-orange-700 focus:ring-0">
+                        <span class="text-[8px] text-orange-300 font-bold uppercase">Min</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <label for="sleep-quality" class="block text-xs font-bold text-gray-400 uppercase">Sleep Quality</label>
+                    <span class="text-indigo-600 font-bold" x-text="$refs.qualityRange.value + '/5'"></span>
+                </div>
+                <input type="range" id="sleep-quality" min="1" max="5" step="1" name="quality" x-ref="qualityRange" value="{{ item.sleep_quality|default:3 }}" 
+                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                <div class="flex justify-between text-[10px] text-gray-400 font-bold uppercase px-1">
+                    <span>Poor</span>
+                    <span>Fair</span>
+                    <span>Excellent</span>
+                </div>
+            </div>
+
+            <div class="pt-4 flex gap-3">
+                <button type="button" onclick="handleModalClose('modal-backdrop', 'health-view-heading')" class="flex-1 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-colors">Cancel</button>
+                <button type="submit" class="flex-1 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-indigo-200 transition-all">Save Sleep Log</button>
+            </div>
+        </form>
+    </div>
+</div>

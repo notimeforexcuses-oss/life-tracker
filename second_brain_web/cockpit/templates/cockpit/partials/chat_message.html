@@ -1,0 +1,24 @@
+<!-- USER MESSAGE -->
+{% if user_msg %}
+<div class="flex flex-col items-end animate-fade-in">
+    <h3 class="sr-only">You said:</h3>
+    <div class="bg-gray-100 text-gray-800 px-4 py-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-sm text-base leading-relaxed">
+        {{ user_msg }}
+    </div>
+</div>
+{% endif %}
+
+<!-- AI RESPONSE -->
+<div class="flex flex-col items-start animate-fade-in">
+    <h3 class="sr-only">Agent replied:</h3>
+    <!-- Added marked.parse() wrapper div to render markdown properly -->
+    <div x-data x-html="marked.parse(`{{ ai_msg|escapejs }}`)" 
+         class="bg-blue-50 text-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[90%] shadow-sm border border-blue-100 prose prose-sm max-w-none text-base leading-relaxed">
+    </div>
+</div>
+
+<script>
+    if (window.playSystemSound) {
+        playSystemSound('ai_msg');
+    }
+</script>

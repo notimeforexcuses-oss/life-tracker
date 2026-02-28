@@ -1,0 +1,170 @@
+<div id="modal-backdrop" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-[60] flex items-center justify-center p-4 animate-fade-in"
+     x-data="{ 
+        exercises: [
+            {% if exercises %}
+                {% for ex in exercises %}
+                    { 
+                        name: '{{ ex.name|escapejs }}', 
+                        sets: [
+                            {% for s in ex.workout_sets.all|dictsort:'set_number' %}
+                                { reps: {{ s.reps }}, weight: {{ s.weight }} },
+                            {% endfor %}
+                            {% if not ex.workout_sets.all %}{ reps: 0, weight: 0.0 }{% endif %}
+                        ]
+                    },
+                {% endfor %}
+            {% else %}
+                { name: '', sets: [{ reps: 0, weight: 0.0 }] }
+            {% endif %}
+        ],
+        templates: [
+            {% for t in templates %}
+                { id: {{ t.id }}, name: '{{ t.name|escapejs }}' },
+            {% endfor %}
+        ],
+        selectedTemplate: '',
+        
+        loadTemplate() {
+            if (!this.selectedTemplate) return;
+            fetch('/api/health/template/' + this.selectedTemplate + '/')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.exercises) {
+                        this.exercises = data.exercises;
+                    }
+                });
+        },
+
+        addSet(exIndex) {
+            const sets = this.exercises[exIndex].sets;
+            const lastSet = sets[sets.length - 1] || { reps: 0, weight: 0.0 };
+            sets.push({ reps: lastSet.reps, weight: lastSet.weight });
+            this.$nextTick(() => {
+                const inputs = document.querySelectorAll(`[id^='ex-${exIndex}-set-${sets.length-1}-reps']`);
+                if (inputs.length) inputs[0].focus();
+            });
+        }
+     }"
+     @keydown.window.alt.a.prevent="
+        const active = document.activeElement;
+        const match = active.id.match(/ex-(\d+)-/);
+        if (match) addSet(parseInt(match[1]));
+     "
+     onclick="if(event.target === this) handleModalClose('modal-backdrop')">
+    
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden transform transition-all animate-modal-slide-in" role="dialog" aria-modal="true">
+        
+        <!-- Modal Header -->
+        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-green-50">
+            <h2 class="text-xl font-bold text-green-800">
+                {% if item %}Edit{% else %}Log New{% endif %} Workout
+            </h2>
+            <button onclick="handleModalClose('modal-backdrop', 'health-view-heading')" class="text-gray-400 hover:text-gray-600 p-2" aria-label="Close Modal">&times;</button>
+        </div>
+
+        <form hx-post="{% url 'save_health_item' %}" hx-swap="none" hx-on::after-request="handleModalClose('modal-backdrop', 'health-view-heading')" class="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
+            <input type="hidden" name="type" value="workout">
+            {% if item %}<input type="hidden" name="id" value="{{ item.id }}">{% endif %}
+            <input type="hidden" name="exercises_json" :value="JSON.stringify(exercises)">
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="md:col-span-2 grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="workout-date" class="block text-xs font-bold text-gray-400 uppercase mb-1">Workout Date</label>
+                        <input type="date" id="workout-date" name="date" value="{{ item.start_datetime|slice:':10'|default:today_str }}" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div>
+                        <label for="workout-time" class="block text-xs font-bold text-gray-400 uppercase mb-1">Workout Time</label>
+                        <input type="time" id="workout-time" name="time" value="{{ item.start_datetime|slice:'11:'|default:now_time_str }}" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500">
+                    </div>
+                </div>
+                <div>
+                    <label for="load-template" class="block text-xs font-bold text-gray-400 uppercase mb-1">Load Template</label>
+                    <select id="load-template" x-model="selectedTemplate" @change="loadTemplate()" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 text-sm">
+                        <option value="">-- Select Routine --</option>
+                        <template x-for="t in templates" :key="t.id">
+                            <option :value="t.id" x-text="t.name"></option>
+                        </template>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label for="workout-type" class="block text-xs font-bold text-gray-400 uppercase mb-1">Workout Name / Type</label>
+                <input type="text" id="workout-type" name="workout_type" value="{{ item.type|default:'' }}" required class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500" placeholder="e.g. Push Day, Cardio, Swimming">
+            </div>
+
+            <div class="space-y-4 pt-2">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider">Exercises</h3>
+                </div>
+                
+                <template x-for="(exercise, exIndex) in exercises" :key="exIndex">
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3 relative group transition-all hover:border-green-200">
+                        <button type="button" @click="exercises.splice(exIndex, 1)" 
+                                class="absolute top-2 right-2 text-gray-300 hover:text-red-500 transition-colors"
+                                :aria-label="'Remove Exercise ' + (exIndex + 1)">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+
+                        <div>
+                            <label :for="'ex-name-' + exIndex" class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Exercise Name</label>
+                            <input type="text" :id="'ex-name-' + exIndex" x-model="exercise.name" placeholder="e.g. Bench Press" class="w-full border-gray-300 rounded-lg text-sm font-bold focus:ring-green-500 focus:border-green-500">
+                        </div>
+
+                        <div class="space-y-2">
+                            <template x-for="(set, sIndex) in exercise.sets" :key="sIndex">
+                                <div class="grid grid-cols-12 gap-3 items-end bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
+                                    <div class="col-span-1 text-[10px] font-black text-gray-300 pb-2">#<span x-text="sIndex+1"></span></div>
+                                    <div class="col-span-4">
+                                        <label :for="'ex-'+exIndex+'-set-'+sIndex+'-reps'" class="sr-only">Reps for set <span x-text="sIndex+1"></span></label>
+                                        <div class="flex items-center gap-1">
+                                            <input type="number" :id="'ex-'+exIndex+'-set-'+sIndex+'-reps'" x-model="set.reps" class="w-full border-gray-200 rounded p-1 text-sm text-center">
+                                            <span class="text-[10px] text-gray-400 font-bold uppercase">Reps</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-span-5">
+                                        <label :for="'ex-'+exIndex+'-set-'+sIndex+'-weight'" class="sr-only">Weight for set <span x-text="sIndex+1"></span></label>
+                                        <div class="flex items-center gap-1">
+                                            <input type="number" step="0.5" :id="'ex-'+exIndex+'-set-'+sIndex+'-weight'" x-model="set.weight" class="w-full border-gray-200 rounded p-1 text-sm text-center">
+                                            <span class="text-[10px] text-gray-400 font-bold uppercase">Lbs</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-span-2 flex justify-end gap-1">
+                                        <button type="button" @click="exercise.sets.splice(sIndex, 1)" class="p-1 text-gray-300 hover:text-red-500" :aria-label="'Remove set ' + (sIndex+1)">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </template>
+                            <button type="button" @click="addSet(exIndex)"
+                                    class="w-full py-1.5 border border-dashed border-gray-300 rounded-lg text-gray-400 font-bold text-[10px] hover:border-green-300 hover:text-green-600 transition-all uppercase tracking-widest">
+                                + Add Set (Alt+A)
+                            </button>
+                        </div>
+                    </div>
+                </template>
+
+                <button type="button" @click="exercises.push({ name: '', sets: [{ reps: 0, weight: 0.0 }] })"
+                        class="w-full py-2 border-2 border-dashed border-gray-200 rounded-xl text-gray-400 font-bold text-xs hover:border-green-300 hover:text-green-600 transition-all uppercase tracking-widest">
+                    + Add Exercise
+                </button>
+            </div>
+
+            <div class="flex items-center gap-2 p-3 bg-blue-50 rounded-xl border border-blue-100">
+                <input type="checkbox" id="save-template" name="save_as_template" class="rounded text-blue-600 focus:ring-blue-500">
+                <label for="save-template" class="text-sm font-bold text-blue-800">Save as Template Routine</label>
+            </div>
+
+            <div>
+                <label for="workout-notes" class="block text-xs font-bold text-gray-400 uppercase mb-1">Workout Notes</label>
+                <textarea id="workout-notes" name="notes" rows="2" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500" placeholder="How did it feel? Any PRs?">{{ item.notes }}</textarea>
+            </div>
+
+            <div class="pt-4 flex gap-3">
+                <button type="button" onclick="handleModalClose('modal-backdrop', 'health-view-heading')" class="flex-1 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-colors">Cancel</button>
+                <button type="submit" class="flex-1 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 shadow-lg shadow-green-200 transition-all">Save Workout</button>
+            </div>
+        </form>
+    </div>
+</div>

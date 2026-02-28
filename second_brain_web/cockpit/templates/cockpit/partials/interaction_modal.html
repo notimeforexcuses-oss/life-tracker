@@ -1,0 +1,101 @@
+<div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-[9999] flex items-center justify-center p-4 animate-fade-in"
+    id="interaction-modal" role="dialog" aria-modal="true" style="display: flex !important;">
+    <div class="bg-white w-full max-w-xl rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+
+        <!-- Header -->
+        <div class="p-6 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2" id="interaction-modal-header" tabindex="-1">
+                <span>📅</span> Log Interaction
+            </h2>
+            <button onclick="handleModalClose('interaction-modal', 'btn-log-interaction')"
+                class="text-gray-400 hover:text-gray-800 text-2xl p-2 focus:outline-none focus:ring-2 focus:ring-gray-500 rounded"
+                aria-label="Close Modal">&times;</button>
+        </div>
+
+        <!-- Form -->
+        <div class="p-6 overflow-y-auto flex-1">
+            <form id="standalone-interaction-form" hx-post="{% url 'process_standalone_interaction' %}" hx-swap="none">
+                
+                <div class="space-y-4">
+                    <!-- Date & Type Row -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Date</label>
+                            <input type="date" name="date" required value="{% now 'Y-m-d' %}"
+                                class="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Type</label>
+                            <select name="type" class="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white">
+                                <option value="Call">📞 Call</option>
+                                <option value="Meeting">👥 Meeting</option>
+                                <option value="Email">✉️ Email</option>
+                                <option value="Meal">🍽️ Meal</option>
+                                <option value="Text">💬 Text</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Participants Multi-Select -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Select Participants (Hold Ctrl/Cmd)</label>
+                        <select name="participants" multiple required class="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white h-32">
+                            {% for c in all_contacts %}
+                            <option value="{{ c.id }}">{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Project & Goal Linking -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Link Project</label>
+                            <select name="linked_project_id" class="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white">
+                                <option value="">-- None --</option>
+                                {% for p in projects %}
+                                <option value="{{ p.id }}">{{ p.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Link Goal</label>
+                            <select name="linked_goal_id" class="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white">
+                                <option value="">-- None --</option>
+                                {% for g in goals %}
+                                <option value="{{ g.id }}">{{ g.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Notes</label>
+                        <textarea name="notes" placeholder="What happened?" required rows="3"
+                            class="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm"></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-4 border-t border-gray-200 bg-gray-50 flex justify-end space-x-3">
+            <button onclick="handleModalClose('interaction-modal', 'btn-log-interaction')"
+                class="px-4 py-2 text-gray-600 hover:text-gray-800 font-bold focus:outline-none focus:underline">
+                Cancel
+            </button>
+            <button onclick="playSystemSound('save'); document.getElementById('standalone-interaction-form').requestSubmit()"
+                class="px-6 py-2 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 shadow-md">
+                Log Interaction
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    setTimeout(() => {
+        document.getElementById('interaction-modal-header').focus();
+    }, 150);
+</script>

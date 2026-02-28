@@ -1,0 +1,160 @@
+{% load custom_filters %}
+<div class="space-y-10" x-data="{ globalShowDetails: false }">
+    
+    <!-- Controls Bar -->
+    <div class="flex justify-end px-2">
+        <button @click="globalShowDetails = !globalShowDetails; $dispatch('toggle-all-details', globalShowDetails)" 
+                type="button"
+                class="text-xs font-bold text-gray-400 hover:text-orange-500 flex items-center gap-1 transition-colors focus:outline-none focus:text-orange-600">
+            <span x-text="globalShowDetails ? 'Hide All Details' : 'Show All Details'"></span>
+            <svg class="w-4 h-4 transition-transform duration-200" :class="globalShowDetails ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </button>
+    </div>
+
+    {% include 'cockpit/partials/health_hydration.html' %}
+
+    {% for date, day_data in grouped_logs.items %}
+    <section class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm" aria-labelledby="header-{{ forloop.counter }}">
+        
+        <!-- Daily Header -->
+        <div class="mb-6 pb-4 border-b-2 border-orange-100">
+            <h3 id="header-{{ forloop.counter }}" class="text-xl font-black text-gray-800 flex items-center gap-2 mb-4">
+                <span aria-hidden="true">📅</span> {{ date|format_health_date }}
+            </h3>
+            
+            <!-- Summary Bar -->
+            <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                <div class="mb-4">
+                    <div class="flex justify-between items-end mb-1">
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Calories Left</span>
+                        <div class="text-right">
+                            <span class="text-2xl font-black text-gray-800">{{ day_data.progress.cal_left|default:0 }}</span>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                        <div class="h-full bg-green-500 transition-all duration-500 rounded-full" 
+                             style="width: {{ day_data.progress.cal|default:0 }}%"></div>
+                    </div>
+                </div>
+                
+                <dl class="grid grid-cols-3 gap-4 border-t border-gray-100 pt-4 text-center">
+                    <div>
+                        <dt class="text-[10px] font-bold text-gray-400 uppercase">Protein</dt>
+                        <dd class="font-bold text-gray-700">{{ day_data.totals.prot|default:0 }}g</dd>
+                    </div>
+                    <div>
+                        <dt class="text-[10px] font-bold text-gray-400 uppercase">Carbs</dt>
+                        <dd class="font-bold text-gray-700">{{ day_data.totals.carb|default:0 }}g</dd>
+                    </div>
+                    <div>
+                        <dt class="text-[10px] font-bold text-gray-400 uppercase">Fat</dt>
+                        <dd class="font-bold text-gray-700">{{ day_data.totals.fat|default:0 }}g</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+        
+        <div class="space-y-6">
+            {% for meal in day_data.entries %}
+            <article class="relative group bg-gray-50 border border-gray-200 rounded-xl p-4 hover:bg-orange-50 hover:border-orange-200 transition-all"
+                     x-data="{ showMealDetails: false }"
+                     @toggle-all-details.window="showMealDetails = $event.detail">
+                <!-- Metadata Label -->
+                <div class="absolute -top-3 left-4 bg-white px-2 rounded border border-orange-100 z-10 flex items-center gap-2">
+                    <span class="text-xs font-bold text-orange-600 uppercase tracking-widest">{{ meal.meal_type|default:'Meal' }}</span>
+                    <button @click="showMealDetails = !showMealDetails" 
+                            class="text-[10px] font-black text-gray-400 hover:text-orange-600 transition-colors uppercase tracking-tighter">
+                        <span x-text="showMealDetails ? '[Hide]' : '[Details]'"></span>
+                    </button>
+                </div>
+                
+                <div class="flex justify-between items-start gap-4 pt-2">
+                    <div class="flex-1">
+                        <!-- Clickable Heading for Edit -->
+                        <h3>
+                            <button type="button" 
+                                    class="text-left font-bold text-gray-900 text-lg mb-2 hover:text-orange-600 focus:outline-none focus:underline"
+                                    hx-get="{% url 'render_health_modal' %}?type=meal&id={{ meal.id }}"
+                                    hx-target="#modal-container">
+                                {{ meal.food_item|default:'Untitled Meal' }}
+                            </button>
+                        </h3>
+                        
+                        <!-- Macros Description List -->
+                        <dl class="flex flex-wrap gap-6 text-gray-700">
+                            <div class="flex flex-col">
+                                <dt class="text-[10px] text-gray-400 font-bold uppercase">Calories</dt>
+                                <dd class="font-bold">{{ meal.calories|default:0 }}</dd>
+                            </div>
+                            <div class="flex flex-col">
+                                <dt class="text-[10px] text-gray-400 font-bold uppercase">Protein</dt>
+                                <dd class="font-bold">{{ meal.protein_g|default:0 }}g</dd>
+                            </div>
+                            <div class="flex flex-col">
+                                <dt class="text-[10px] text-gray-400 font-bold uppercase">Carbs</dt>
+                                <dd class="font-bold">{{ meal.carbs_g|default:0 }}g</dd>
+                            </div>
+                            <div class="flex flex-col">
+                                <dt class="text-[10px] text-gray-400 font-bold uppercase">Fat</dt>
+                                <dd class="font-bold">{{ meal.fat_g|default:0 }}g</dd>
+                            </div>
+                        </dl>
+
+                        <!-- Micros Description List (Toggled) -->
+                        <div x-show="showMealDetails" 
+                             x-collapse
+                             id="nutrient-details-{{ meal.id }}" 
+                             class="mt-4 pt-4 border-t border-gray-200/50">
+                            <dl class="grid grid-cols-2 gap-2 text-gray-600">
+                                <div class="flex justify-between text-xs">
+                                    <dt>Fiber</dt>
+                                    <dd class="font-bold">{{ meal.fiber_g|default:0 }}g</dd>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <dt>Sugar</dt>
+                                    <dd class="font-bold">{{ meal.sugar_g|default:0 }}g</dd>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <dt>Sodium</dt>
+                                    <dd class="font-bold">{{ meal.sodium_mg|default:0 }}mg</dd>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <dt>Cholesterol</dt>
+                                    <dd class="font-bold">{{ meal.cholesterol_mg|default:0 }}mg</dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col items-center gap-2">
+                         <!-- Macro Donut Chart -->
+                        <div class="relative w-16 h-16 flex-shrink-0" role="presentation" aria-hidden="true">
+                            {% with segs=meal|calculate_segments %}
+                            <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 32 32">
+                                <circle cx="16" cy="16" r="14" fill="transparent" stroke="#f3f4f6" stroke-width="4"></circle>
+                                <circle cx="16" cy="16" r="14" fill="transparent" stroke="#10b981" stroke-width="4" stroke-dasharray="{{ segs.p|default:0 }} 100" stroke-dashoffset="0"></circle>
+                                <circle cx="16" cy="16" r="14" fill="transparent" stroke="#3b82f6" stroke-width="4" stroke-dasharray="{{ segs.c|default:0 }} 100" stroke-dashoffset="-{{ segs.c_off|default:0 }}"></circle>
+                                <circle cx="16" cy="16" r="14" fill="transparent" stroke="#f59e0b" stroke-width="4" stroke-dasharray="{{ segs.f|default:0 }} 100" stroke-dashoffset="-{{ segs.f_off|default:0 }}"></circle>
+                            </svg>
+                            {% endwith %}
+                        </div>
+
+                        <!-- Duplicate Button -->
+                        <button type="button"
+                                hx-post="{% url 'duplicate_meal' meal.id %}"
+                                hx-swap="none"
+                                class="p-2 text-gray-300 hover:text-green-600 hover:bg-green-50 rounded-full transition-all"
+                                title="Duplicate to Today"
+                                aria-label="Duplicate {{ meal.food_item|default:'Meal' }}">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% empty %}
+    <div class="text-center py-20 text-gray-500">No logs found.</div>
+    {% endfor %}
+</div>

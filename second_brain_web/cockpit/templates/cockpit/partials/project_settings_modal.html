@@ -1,0 +1,68 @@
+<div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center p-4" id="project-settings-modal" role="dialog" aria-modal="true">
+    <div class="bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden flex flex-col">
+        
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+            <h2 class="text-lg font-bold text-gray-800" id="settings-header" tabindex="-1">Project Settings</h2>
+            <button onclick="handleModalClose('project-settings-modal', 'project-overview-heading')" class="text-gray-400 hover:text-gray-800 text-2xl" aria-label="Close Settings">&times;</button>
+        </div>
+
+        <form hx-post="/api/projects/{{ project.id }}/update" 
+              hx-swap="none"
+              hx-on::after-request="handleModalClose('project-settings-modal', 'project-overview-heading')">
+            <div class="p-6 space-y-4">
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Project Name</label>
+                    <input type="text" name="title" value="{{ project.title }}" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 font-bold">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Description</label>
+                    <textarea name="description" rows="3" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500">{{ project.description }}</textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Parent Goal</label>
+                    <select name="goal_id" class="w-full p-2 border border-gray-300 rounded bg-white">
+                        <option value="">-- No Goal --</option>
+                        {% for g in goals %}
+                        <option value="{{ g.id }}" {% if project.goal_id == g.id %}selected{% endif %}>{{ g.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Status</label>
+                        <select name="status" class="w-full p-2 border border-gray-300 rounded bg-white font-medium">
+                            <option value="ACTIVE" {% if project.status == 'ACTIVE' %}selected{% endif %}>Active</option>
+                            <option value="PAUSED" {% if project.status == 'PAUSED' %}selected{% endif %}>Paused</option>
+                            <option value="COMPLETED" {% if project.status == 'COMPLETED' %}selected{% endif %}>Completed</option>
+                            <option value="ARCHIVED" {% if project.status == 'ARCHIVED' %}selected{% endif %}>Archived</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Priority</label>
+                        <select name="priority" class="w-full p-2 border border-gray-300 rounded bg-white">
+                            <option value="Low" {% if project.priority == 'Low' %}selected{% endif %}>Low</option>
+                            <option value="Medium" {% if project.priority == 'Medium' %}selected{% endif %}>Medium</option>
+                            <option value="High" {% if project.priority == 'High' %}selected{% endif %}>High</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="p-4 border-t border-gray-200 bg-gray-50 flex justify-end space-x-2">
+                <button type="button" onclick="handleModalClose('project-settings-modal', 'project-overview-heading')" class="px-3 py-1.5 text-gray-500 font-medium hover:bg-gray-200 rounded">Cancel</button>
+                <button type="submit" onclick="persistToast('Project settings saved')" class="px-4 py-1.5 bg-blue-600 text-white font-bold rounded hover:bg-blue-700 shadow-sm">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    setTimeout(() => {
+        document.getElementById('settings-header').focus();
+    }, 150);
+</script>
