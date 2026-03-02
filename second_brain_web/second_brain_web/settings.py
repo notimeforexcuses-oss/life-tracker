@@ -60,16 +60,23 @@ TEMPLATES = [
 WSGI_APPLICATION = 'second_brain_web.wsgi.application'
 
 
-# --- DATABASE CONFIGURATION ---
-# Strictly use the brain.db in the project root (one level up from manage.py)
-FINAL_DB_PATH = BASE_DIR.parent / 'brain.db'
+import dj_database_url
 
+# --- DATABASE CONFIGURATION ---
+# Default to SQLite (local development)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': FINAL_DB_PATH,
+        'NAME': BASE_DIR.parent / 'brain.db',
     }
 }
+
+# Override with PostgreSQL if DATABASE_URL is present (Railway/Production)
+if 'DATABASE_URL' in os.environ:
+    DATABASES['default'] = dj_database_url.config(
+        default=os.environ['DATABASE_URL'],
+        conn_max_age=600
+    )
 
 
 # Password validation
